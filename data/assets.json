@@ -1,18 +1,283 @@
 {
   "version": 1,
   "assets": {
-    "template_bonus": [],
-    "template_creature": [],
-    "template_slime_mono": [],
-    "template_slime_bi": [],
-    "template_slime_tri": [],
-    "template_slime_secret": [],
-    "template_slime_ultime": [],
-    "slime": [],
-    "creature": [],
+    "template_bonus": [
+      {
+        "id": "templatebonus_1",
+        "name": "TemplateBonus+1",
+        "src": "assets/card-builder/templates/bonus/TemplateBonus+1.png"
+      },
+      {
+        "id": "templatebonus_2",
+        "name": "TemplateBonus+2",
+        "src": "assets/card-builder/templates/bonus/TemplateBonus+2.png"
+      },
+      {
+        "id": "templatebonus_2restriction",
+        "name": "TemplateBonus+2Restriction",
+        "src": "assets/card-builder/templates/bonus/TemplateBonus+2Restriction.png"
+      },
+      {
+        "id": "templatebonus_4dernier",
+        "name": "TemplateBonus+4Dernier",
+        "src": "assets/card-builder/templates/bonus/TemplateBonus+4Dernier.png"
+      }
+    ],
+    "template_creature": [
+      {
+        "id": "templatecreaturedesert",
+        "name": "TemplateCreatureDesert",
+        "src": "assets/card-builder/templates/creature/TemplateCreatureDesert.png"
+      },
+      {
+        "id": "templatecreatureeau",
+        "name": "TemplateCreatureEau",
+        "src": "assets/card-builder/templates/creature/TemplateCreatureEau.png"
+      },
+      {
+        "id": "templatecreatureforet",
+        "name": "TemplateCreatureForet",
+        "src": "assets/card-builder/templates/creature/TemplateCreatureForet.png"
+      },
+      {
+        "id": "templatecreaturemarecage",
+        "name": "TemplateCreatureMarecage",
+        "src": "assets/card-builder/templates/creature/TemplateCreatureMarecage.png"
+      },
+      {
+        "id": "templatecreaturemontagne",
+        "name": "TemplateCreatureMontagne",
+        "src": "assets/card-builder/templates/creature/TemplateCreatureMontagne.png"
+      },
+      {
+        "id": "templatecreatureplaine",
+        "name": "TemplateCreaturePlaine",
+        "src": "assets/card-builder/templates/creature/TemplateCreaturePlaine.png"
+      }
+    ],
+    "template_slime_mono": [
+      {
+        "id": "templateslimedesert",
+        "name": "TemplateSlimeDesert",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimeDesert.png"
+      },
+      {
+        "id": "templateslimeeau",
+        "name": "TemplateSlimeEau",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimeEau.png"
+      },
+      {
+        "id": "templateslimeforet",
+        "name": "TemplateSlimeForet",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimeForet.png"
+      },
+      {
+        "id": "templateslimemarecage",
+        "name": "TemplateSlimeMarecage",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimeMarecage.png"
+      },
+      {
+        "id": "templateslimemontagne",
+        "name": "TemplateSlimeMontagne",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimeMontagne.png"
+      },
+      {
+        "id": "templateslimeplaine",
+        "name": "TemplateSlimePlaine",
+        "src": "assets/card-builder/templates/slime/mono/TemplateSlimePlaine.png"
+      }
+    ],
+    "template_slime_bi": [
+      {
+        "id": "templateslimebilvl2",
+        "name": "TemplateSlimeBilvl2",
+        "src": "assets/card-builder/templates/slime/bi/TemplateSlimeBilvl2.png"
+      }
+    ],
+    "template_slime_tri": [
+      {
+        "id": "templateslimetrilvl3",
+        "name": "TemplateSlimeTrilvl3",
+        "src": "assets/card-builder/templates/slime/tri/TemplateSlimeTrilvl3.png"
+      }
+    ],
+    "template_slime_secret": [
+      {
+        "id": "templateslimesecretbi",
+        "name": "TemplateSlimeSecretBi",
+        "src": "assets/card-builder/templates/slime/secret/TemplateSlimeSecretBi.png"
+      }
+    ],
+    "template_slime_ultime": [
+      {
+        "id": "templateslimesecretultime",
+        "name": "TemplateSlimeSecretUltime",
+        "src": "assets/card-builder/templates/slime/ultime/TemplateSlimeSecretUltime.png"
+      }
+    ],
+    "slime": [
+      {
+        "id": "slimedesertlvl1",
+        "name": "SlimeDesertlvl1",
+        "src": "assets/card-builder/slimes/SlimeDesertlvl1.png"
+      },
+      {
+        "id": "slimedesertlvl2",
+        "name": "SlimeDesertlvl2",
+        "src": "assets/card-builder/slimes/SlimeDesertlvl2.png"
+      },
+      {
+        "id": "slimedesertlvl3",
+        "name": "SlimeDesertlvl3",
+        "src": "assets/card-builder/slimes/SlimeDesertlvl3.png"
+      },
+      {
+        "id": "slimeeaulvl1",
+        "name": "SlimeEaulvl1",
+        "src": "assets/card-builder/slimes/SlimeEaulvl1.png"
+      },
+      {
+        "id": "slimeeaulvl2",
+        "name": "SlimeEaulvl2",
+        "src": "assets/card-builder/slimes/SlimeEaulvl2.png"
+      }
+    ],
+    "creature": [
+      {
+        "id": "desertlvl1",
+        "name": "Desertlvl1",
+        "src": "assets/card-builder/creatures/Desertlvl1.png"
+      },
+      {
+        "id": "desertlvl2",
+        "name": "Desertlvl2",
+        "src": "assets/card-builder/creatures/Desertlvl2.png"
+      },
+      {
+        "id": "desertlvl3",
+        "name": "Desertlvl3",
+        "src": "assets/card-builder/creatures/Desertlvl3.png"
+      },
+      {
+        "id": "eaulvl1",
+        "name": "Eaulvl1",
+        "src": "assets/card-builder/creatures/Eaulvl1.png"
+      },
+      {
+        "id": "eaulvl2",
+        "name": "Eaulvl2",
+        "src": "assets/card-builder/creatures/Eaulvl2.png"
+      },
+      {
+        "id": "eaulvl3",
+        "name": "Eaulvl3",
+        "src": "assets/card-builder/creatures/Eaulvl3.png"
+      },
+      {
+        "id": "foretlvl1",
+        "name": "Foretlvl1",
+        "src": "assets/card-builder/creatures/Foretlvl1.png"
+      },
+      {
+        "id": "foretlvl2",
+        "name": "Foretlvl2",
+        "src": "assets/card-builder/creatures/Foretlvl2.png"
+      },
+      {
+        "id": "foretlvl3",
+        "name": "Foretlvl3",
+        "src": "assets/card-builder/creatures/Foretlvl3.png"
+      },
+      {
+        "id": "marecagelvl1",
+        "name": "Marecagelvl1",
+        "src": "assets/card-builder/creatures/Marecagelvl1.png"
+      },
+      {
+        "id": "marecagelvl2",
+        "name": "Marecagelvl2",
+        "src": "assets/card-builder/creatures/Marecagelvl2.png"
+      },
+      {
+        "id": "marecagelvl3",
+        "name": "Marecagelvl3",
+        "src": "assets/card-builder/creatures/Marecagelvl3.png"
+      },
+      {
+        "id": "montagnelvl1",
+        "name": "Montagnelvl1",
+        "src": "assets/card-builder/creatures/Montagnelvl1.png"
+      },
+      {
+        "id": "montagnelvl2",
+        "name": "Montagnelvl2",
+        "src": "assets/card-builder/creatures/Montagnelvl2.png"
+      },
+      {
+        "id": "montagnelvl3",
+        "name": "Montagnelvl3",
+        "src": "assets/card-builder/creatures/Montagnelvl3.png"
+      },
+      {
+        "id": "plainelvl1",
+        "name": "Plainelvl1",
+        "src": "assets/card-builder/creatures/Plainelvl1.png"
+      },
+      {
+        "id": "plainelvl2",
+        "name": "Plainelvl2",
+        "src": "assets/card-builder/creatures/Plainelvl2.png"
+      },
+      {
+        "id": "plainelvl3",
+        "name": "Plainelvl3",
+        "src": "assets/card-builder/creatures/Plainelvl3.png"
+      }
+    ],
     "icon": [],
     "bonus_asset": [],
-    "restriction": [],
+    "restriction": [
+      {
+        "id": "terrain_desert",
+        "name": "Terrain Desert",
+        "src": "assets/card-builder/restrictions/terrain-desert.png"
+      },
+      {
+        "id": "terrain_forest",
+        "name": "Terrain Forest",
+        "src": "assets/card-builder/restrictions/terrain-forest.png"
+      },
+      {
+        "id": "terrain_mountain",
+        "name": "Terrain Mountain",
+        "src": "assets/card-builder/restrictions/terrain-mountain.png"
+      },
+      {
+        "id": "terrain_plains",
+        "name": "Terrain Plains",
+        "src": "assets/card-builder/restrictions/terrain-plains.png"
+      },
+      {
+        "id": "terrain_secret",
+        "name": "Terrain Secret",
+        "src": "assets/card-builder/restrictions/terrain-secret.png"
+      },
+      {
+        "id": "terrain_swamp",
+        "name": "Terrain Swamp",
+        "src": "assets/card-builder/restrictions/terrain-swamp.png"
+      },
+      {
+        "id": "terrain_water",
+        "name": "Terrain Water",
+        "src": "assets/card-builder/restrictions/terrain-water.png"
+      },
+      {
+        "id": "warning_outline_256",
+        "name": "Warning Outline 256",
+        "src": "assets/card-builder/restrictions/Warning Outline 256.png"
+      }
+    ],
     "level": [],
     "marker": []
   }
