@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Slime Racing - Card Builder</title>
+    <link rel="stylesheet" href="card-builder.css">
+  </head>
+  <body>
+    <header class="builder-header">
+      <div>
+        <p class="eyebrow">Slime Racing</p>
+        <h1>Card Builder</h1>
+      </div>
+      <div class="top-actions" aria-label="Actions de carte">
+        <button type="button" data-action="reset-card">Reset carte</button>
+        <button type="button" id="removeSlotButton" data-action="remove-slot-image" disabled>
+          Retirer l'image du slot
+        </button>
+        <button type="button" id="exportButton" data-action="export-png" disabled>
+          Exporter PNG HD
+        </button>
+      </div>
+    </header>
+
+    <main class="builder-shell">
+      <aside class="builder-panel left-panel" aria-label="Choix du template">
+        <section class="panel-section">
+          <label class="field-label" for="templateTypeSelect">Type de template</label>
+          <select id="templateTypeSelect"></select>
+          <p id="templateInfo" class="meta-line"></p>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
+            <h2>Templates</h2>
+            <span id="templateCount" class="pill">0</span>
+          </div>
+          <div id="templateGallery" class="thumb-grid"></div>
+        </section>
+      </aside>
+
+      <section class="canvas-panel" aria-label="Preview de la carte">
+        <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+        <div class="canvas-stage">
+          <div id="canvasWrap" class="canvas-wrap">
+            <canvas id="cardCanvas" width="1500" height="2100"></canvas>
+            <div id="slotOverlay" class="slot-overlay" aria-label="Slots de carte"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="builder-panel right-panel" aria-label="Assets et reglages">
+        <section class="panel-section">
+          <div class="section-heading">
+            <h2>Slot selectionne</h2>
+          </div>
+          <div id="slotDetails" class="slot-details"></div>
+          <div id="slotControls" class="slot-controls" hidden>
+            <label class="control-row" for="slotZoom">
+              <span>Zoom</span>
+              <input id="slotZoom" type="range" min="0.2" max="3" step="0.01">
+              <input id="slotZoomNumber" type="number" min="0.2" max="10" step="0.01">
+            </label>
+            <label class="control-row" for="slotOffsetX">
+              <span>Offset X</span>
+              <input id="slotOffsetX" type="number" step="1">
+            </label>
+            <label class="control-row" for="slotOffsetY">
+              <span>Offset Y</span>
+              <input id="slotOffsetY" type="number" step="1">
+            </label>
+            <button type="button" class="secondary-action" data-action="reset-slot-position">
+              Reset position
+            </button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
+            <h2>Galerie</h2>
+            <span id="assetCount" class="pill">0</span>
+          </div>
+          <div id="assetGallery" class="thumb-grid"></div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="card-builder.js"></script>
+  </body>
+</html>

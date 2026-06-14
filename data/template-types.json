@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "templateTypes": [
+    {
+      "id": "template_bonus",
+      "name": "Bonus",
+      "category": "template_bonus",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "bonus_art",
+          "label": "Image Bonus",
+          "category": "bonus_asset",
+          "x": 240,
+          "y": 420,
+          "width": 1020,
+          "height": 900,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "restriction_icon",
+          "label": "Restriction",
+          "category": "restriction",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        }
+      ]
+    },
+    {
+      "id": "template_creature",
+      "name": "Creature",
+      "category": "template_creature",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "creature_main",
+          "label": "Image Creature",
+          "category": "creature",
+          "x": 260,
+          "y": 390,
+          "width": 980,
+          "height": 940,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "marker_icon",
+          "label": "Marqueur",
+          "category": "marker",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        }
+      ]
+    },
+    {
+      "id": "template_slime_mono",
+      "name": "Slime mono-terrain",
+      "category": "template_slime_mono",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "slime_main",
+          "label": "Image Slime",
+          "category": "slime",
+          "x": 300,
+          "y": 420,
+          "width": 900,
+          "height": 850,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "terrain_icon_1",
+          "label": "Icone Terrain",
+          "category": "icon",
+          "x": 1170,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        }
+      ]
+    },
+    {
+      "id": "template_slime_bi",
+      "name": "Slime bi-terrain",
+      "category": "template_slime_bi",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "slime_main",
+          "label": "Image Slime",
+          "category": "slime",
+          "x": 300,
+          "y": 420,
+          "width": 900,
+          "height": 850,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "terrain_icon_1",
+          "label": "Icone Terrain 1",
+          "category": "icon",
+          "x": 1080,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        },
+        {
+          "id": "terrain_icon_2",
+          "label": "Icone Terrain 2",
+          "category": "icon",
+          "x": 1260,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        }
+      ]
+    },
+    {
+      "id": "template_slime_tri",
+      "name": "Slime tri-terrain",
+      "category": "template_slime_tri",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "slime_main",
+          "label": "Image Slime",
+          "category": "slime",
+          "x": 300,
+          "y": 420,
+          "width": 900,
+          "height": 850,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "terrain_icon_1",
+          "label": "Icone Terrain 1",
+          "category": "icon",
+          "x": 990,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        },
+        {
+          "id": "terrain_icon_2",
+          "label": "Icone Terrain 2",
+          "category": "icon",
+          "x": 1170,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        },
+        {
+          "id": "terrain_icon_3",
+          "label": "Icone Terrain 3",
+          "category": "icon",
+          "x": 1350,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 40
+        }
+      ]
+    },
+    {
+      "id": "template_slime_secret",
+      "name": "Slime secret",
+      "category": "template_slime_secret",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "slime_main",
+          "label": "Image Slime",
+          "category": "slime",
+          "x": 300,
+          "y": 420,
+          "width": 900,
+          "height": 850,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "marker_icon",
+          "label": "Marqueur Secret",
+          "category": "marker",
+          "x": 1170,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        }
+      ]
+    },
+    {
+      "id": "template_slime_ultime",
+      "name": "Slime ultime",
+      "category": "template_slime_ultime",
+      "width": 1500,
+      "height": 2100,
+      "slots": [
+        {
+          "id": "slime_main",
+          "label": "Image Slime",
+          "category": "slime",
+          "x": 260,
+          "y": 360,
+          "width": 980,
+          "height": 980,
+          "fit": "contain",
+          "zIndex": 10
+        },
+        {
+          "id": "terrain_icon_1",
+          "label": "Icone Terrain 1",
+          "category": "icon",
+          "x": 990,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 20
+        },
+        {
+          "id": "terrain_icon_2",
+          "label": "Icone Terrain 2",
+          "category": "icon",
+          "x": 1170,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        },
+        {
+          "id": "terrain_icon_3",
+          "label": "Icone Terrain 3",
+          "category": "icon",
+          "x": 1350,
+          "y": 120,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 40
+        },
+        {
+          "id": "marker_icon",
+          "label": "Marqueur Ultime",
+          "category": "marker",
+          "x": 660,
+          "y": 1380,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 50
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "assets": {
+    "template_bonus": [],
+    "template_creature": [],
+    "template_slime_mono": [],
+    "template_slime_bi": [],
+    "template_slime_tri": [],
+    "template_slime_secret": [],
+    "template_slime_ultime": [],
+    "slime": [],
+    "creature": [],
+    "icon": [],
+    "bonus_asset": [],
+    "restriction": [],
+    "level": [],
+    "marker": []
+  }
+}
