@@ -449,7 +449,23 @@
         "src": "assets/card-builder/restrictions/Warning Outline 256.png"
       }
     ],
-    "level": [],
+    "level": [
+      {
+        "id": "lvl1_transparent",
+        "name": "Lvl1 Transparent",
+        "src": "assets/card-builder/levels/Lvl1_transparent.png"
+      },
+      {
+        "id": "lvl2_transparent",
+        "name": "Lvl2 Transparent",
+        "src": "assets/card-builder/levels/Lvl2_transparent.png"
+      },
+      {
+        "id": "lvl3_transparent",
+        "name": "Lvl3 Transparent",
+        "src": "assets/card-builder/levels/Lvl3_transparent.png"
+      }
+    ],
     "marker": []
   }
 }
