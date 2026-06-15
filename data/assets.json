@@ -466,6 +466,42 @@
         "src": "assets/card-builder/levels/Lvl3_transparent.png"
       }
     ],
-    "marker": []
+    "marker": [
+      {
+        "id": "desert",
+        "name": "Desert",
+        "src": "assets/card-builder/markers/Desert.png"
+      },
+      {
+        "id": "eau",
+        "name": "Eau",
+        "src": "assets/card-builder/markers/Eau.png"
+      },
+      {
+        "id": "foret",
+        "name": "Foret",
+        "src": "assets/card-builder/markers/Foret.png"
+      },
+      {
+        "id": "marecage",
+        "name": "Marecage",
+        "src": "assets/card-builder/markers/Marecage.png"
+      },
+      {
+        "id": "montagne",
+        "name": "Montagne",
+        "src": "assets/card-builder/markers/Montagne.png"
+      },
+      {
+        "id": "plaine",
+        "name": "Plaine",
+        "src": "assets/card-builder/markers/Plaine.png"
+      },
+      {
+        "id": "question_mark_outline_256",
+        "name": "Question Mark Outline 256",
+        "src": "assets/card-builder/markers/Question Mark Outline 256.png"
+      }
+    ]
   }
 }
