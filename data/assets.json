@@ -115,38 +115,7 @@
         "src": "assets/card-builder/templates/slime/ultime/TemplateSlimeSecretUltime.png"
       }
     ],
-    "slime": [
-      {
-        "id": "slimedesert1",
-        "name": "SlimeDesert1",
-        "src": "assets/card-builder/slimes/SlimeDesert1.png"
-      },
-      {
-        "id": "slimedesertlvl1",
-        "name": "SlimeDesertlvl1",
-        "src": "assets/card-builder/slimes/SlimeDesertlvl1.png"
-      },
-      {
-        "id": "slimedesertlvl2",
-        "name": "SlimeDesertlvl2",
-        "src": "assets/card-builder/slimes/SlimeDesertlvl2.png"
-      },
-      {
-        "id": "slimedesertlvl3",
-        "name": "SlimeDesertlvl3",
-        "src": "assets/card-builder/slimes/SlimeDesertlvl3.png"
-      },
-      {
-        "id": "slimeeaulvl1",
-        "name": "SlimeEaulvl1",
-        "src": "assets/card-builder/slimes/SlimeEaulvl1.png"
-      },
-      {
-        "id": "slimeeaulvl2",
-        "name": "SlimeEaulvl2",
-        "src": "assets/card-builder/slimes/SlimeEaulvl2.png"
-      }
-    ],
+    "slime": [],
     "creature": [
       {
         "id": "desertlvl1",
