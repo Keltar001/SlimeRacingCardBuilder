@@ -20,6 +20,59 @@
     };
   }
 
+  function normalizeText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  function sanitizeFileName(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9_-]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .replace(/_+/g, "_");
+  }
+
+  function createCardId(now) {
+    return `card_${String(now || new Date().toISOString())
+      .replace(/[^0-9a-zA-Z]+/g, "_")
+      .replace(/^_+|_+$/g, "")}`;
+  }
+
+  function buildCardSnapshot(state, options) {
+    const safeState = state || {};
+    const settings = options || {};
+    const now = settings.now || new Date().toISOString();
+    const existingCard = settings.existingCard || null;
+    const templateTypeId = safeState.selectedTemplateTypeId || "";
+    const slotsByType = safeState.slotStateByType || {};
+
+    return {
+      id: existingCard && existingCard.id ? existingCard.id : createCardId(now),
+      name: String(settings.cardName || "").trim(),
+      templateTypeId,
+      templateAssetId:
+        ((safeState.templateAssetByType || {})[templateTypeId] || "").trim(),
+      slots: cloneTemplateTypes([slotsByType[templateTypeId] || {}])[0],
+      createdAt: existingCard && existingCard.createdAt ? existingCard.createdAt : now,
+      updatedAt: now,
+    };
+  }
+
+  function assetMatchesSearch(asset, searchText, category, quickFilter) {
+    const safeAsset = asset || {};
+    const haystack = normalizeText(
+      `${safeAsset.id || ""} ${safeAsset.name || ""} ${safeAsset.src || ""} ${category || ""}`,
+    );
+    const query = normalizeText(searchText).trim();
+    const filter = normalizeText(quickFilter).trim();
+
+    return (!query || haystack.includes(query)) && (!filter || haystack.includes(filter));
+  }
+
   function sanitizeNumber(value, fallback, min) {
     const parsed = Number(value);
     const next = Number.isFinite(parsed) ? parsed : fallback;
@@ -77,8 +130,11 @@
   }
 
   return {
+    assetMatchesSearch,
+    buildCardSnapshot,
     buildTemplateTypesPayload,
     cloneTemplateTypes,
+    sanitizeFileName,
     updateSlotLayout,
   };
 });

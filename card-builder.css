@@ -76,7 +76,9 @@ button:disabled {
 }
 
 select,
-input[type="number"] {
+input[type="number"],
+input[type="text"],
+input[type="search"] {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -120,6 +122,26 @@ input[type="range"] {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.55rem;
+}
+
+.card-name-field,
+.preview-zoom-field {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 180px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.card-name-field input,
+.preview-zoom-field select {
+  min-height: 2.45rem;
+  padding: 0.45rem 0.6rem;
+}
+
+.preview-zoom-field {
+  min-width: 130px;
 }
 
 .toggle-action {
@@ -316,6 +338,24 @@ input[type="range"] {
   width: min(100%, 560px);
 }
 
+.canvas-wrap.zoom-fit {
+  width: min(100%, 560px);
+}
+
+.canvas-wrap.zoom-100 {
+  width: 1500px;
+  max-width: none;
+}
+
+.canvas-wrap.zoom-small {
+  width: 300px;
+}
+
+.canvas-wrap.zoom-print {
+  width: 714px;
+  max-width: none;
+}
+
 #cardCanvas {
   display: block;
   width: 100%;
@@ -329,6 +369,13 @@ input[type="range"] {
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.slot-overlay.has-grid {
+  background-image:
+    linear-gradient(to right, rgba(31, 112, 74, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 112, 74, 0.18) 1px, transparent 1px);
+  background-size: var(--grid-x, 10px) var(--grid-y, 10px);
 }
 
 .slot-hotspot {
@@ -474,6 +521,17 @@ input[type="range"] {
   margin-top: 0.9rem;
 }
 
+.layout-grid-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.layout-grid-options .control-row {
+  grid-column: 1 / -1;
+}
+
 .control-row-compact {
   grid-template-columns: 72px minmax(0, 1fr);
 }
@@ -496,6 +554,40 @@ input[type="range"] {
 
 .layout-actions .secondary-action:hover {
   background: var(--panel-strong);
+}
+
+.saved-card-actions {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.saved-card-actions .secondary-action {
+  width: 100%;
+  background: #ffffff;
+  color: var(--accent-dark);
+}
+
+.quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.65rem 0 0.75rem;
+}
+
+.filter-chip {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.filter-chip.is-active,
+.filter-chip:hover {
+  border-color: var(--accent);
+  background: var(--panel-strong);
+  color: var(--accent-dark);
 }
 
 @media (max-width: 1120px) {

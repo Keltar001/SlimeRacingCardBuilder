@@ -47,10 +47,19 @@
     schemaVersion: SCHEMA_VERSION,
     selectedTemplateTypeId: "",
     selectedSlotId: "",
+    cardName: "",
+    activeSavedCardId: "",
+    savedCards: [],
     templateAssetByType: {},
     slotStateByType: {},
     layoutEditorMode: false,
     showGuides: true,
+    showGrid: false,
+    snapToGrid: false,
+    gridSize: 10,
+    assetSearch: "",
+    assetQuickFilter: "",
+    previewZoomMode: "fit",
     layoutTemplateTypes: null,
   };
 
@@ -92,10 +101,15 @@
     elements.templateInfo = document.getElementById("templateInfo");
     elements.templateGallery = document.getElementById("templateGallery");
     elements.templateCount = document.getElementById("templateCount");
+    elements.cardNameInput = document.getElementById("cardNameInput");
+    elements.previewZoomSelect = document.getElementById("previewZoomSelect");
+    elements.exportZipButton = document.getElementById("exportZipButton");
     elements.assetGallery = document.getElementById("assetGallery");
     elements.assetCount = document.getElementById("assetCount");
+    elements.assetSearchInput = document.getElementById("assetSearchInput");
     elements.statusMessage = document.getElementById("statusMessage");
     elements.cardCanvas = document.getElementById("cardCanvas");
+    elements.canvasWrap = document.getElementById("canvasWrap");
     elements.slotOverlay = document.getElementById("slotOverlay");
     elements.slotDetails = document.getElementById("slotDetails");
     elements.slotControls = document.getElementById("slotControls");
@@ -117,6 +131,14 @@
     elements.layoutFit = document.getElementById("layoutFit");
     elements.layoutShape = document.getElementById("layoutShape");
     elements.layoutZIndex = document.getElementById("layoutZIndex");
+    elements.gridToggle = document.getElementById("gridToggle");
+    elements.snapToggle = document.getElementById("snapToggle");
+    elements.gridSizeInput = document.getElementById("gridSizeInput");
+    elements.savedCardSelect = document.getElementById("savedCardSelect");
+    elements.savedCardCount = document.getElementById("savedCardCount");
+    elements.loadCardButton = document.getElementById("loadCardButton");
+    elements.duplicateCardButton = document.getElementById("duplicateCardButton");
+    elements.cardJsonImport = document.getElementById("cardJsonImport");
     elements.templateTypesImport = document.getElementById("templateTypesImport");
   }
 
@@ -126,14 +148,23 @@
     document.addEventListener("pointermove", handleLayoutPointerMove);
     document.addEventListener("pointerup", handleLayoutPointerUp);
     elements.templateTypeSelect.addEventListener("change", handleTemplateTypeChange);
+    elements.cardNameInput.addEventListener("input", handleCardNameInput);
+    elements.previewZoomSelect.addEventListener("change", handlePreviewZoomChange);
+    elements.assetSearchInput.addEventListener("input", handleAssetSearchInput);
+    elements.savedCardSelect.addEventListener("change", handleSavedCardSelectChange);
     elements.layoutEditorToggle.addEventListener("change", handleLayoutEditorToggle);
     elements.guidesToggle.addEventListener("change", handleGuidesToggle);
+    elements.gridToggle.addEventListener("change", handleGridToggle);
+    elements.snapToggle.addEventListener("change", handleSnapToggle);
+    elements.gridSizeInput.addEventListener("input", handleGridSizeInput);
     elements.slotControls.addEventListener("input", handleSlotControlInput);
     elements.slotControls.addEventListener("change", handleSlotControlInput);
     elements.layoutControls.addEventListener("input", handleLayoutControlInput);
     elements.layoutControls.addEventListener("change", handleLayoutControlInput);
     elements.slotOverlay.addEventListener("pointerdown", handleLayoutPointerDown);
     elements.templateTypesImport.addEventListener("change", handleTemplateTypesImport);
+    elements.cardJsonImport.addEventListener("change", handleCardJsonImport);
+    document.addEventListener("keydown", handleLayoutKeyDown);
   }
 
   async function loadJson(url, label) {
@@ -193,6 +224,16 @@
   }
 
   function hydrateStateFromData() {
+    if (
+      state.activeSavedCardId &&
+      !state.savedCards.some((card) => card.id === state.activeSavedCardId)
+    ) {
+      state.activeSavedCardId = "";
+    }
+    if (!state.activeSavedCardId && state.savedCards.length) {
+      state.activeSavedCardId = state.savedCards[0].id;
+    }
+
     if (!templateTypes.length) {
       state.selectedTemplateTypeId = "";
       state.selectedSlotId = "";
@@ -246,10 +287,23 @@
         schemaVersion: SCHEMA_VERSION,
         selectedTemplateTypeId: parsed.selectedTemplateTypeId || "",
         selectedSlotId: parsed.selectedSlotId || "",
+        cardName: parsed.cardName || "",
+        activeSavedCardId: parsed.activeSavedCardId || "",
+        savedCards: Array.isArray(parsed.savedCards) ? parsed.savedCards : [],
         templateAssetByType: parsed.templateAssetByType || {},
         slotStateByType: parsed.slotStateByType || {},
         layoutEditorMode: Boolean(parsed.layoutEditorMode),
         showGuides: parsed.showGuides !== false,
+        showGrid: Boolean(parsed.showGrid),
+        snapToGrid: Boolean(parsed.snapToGrid),
+        gridSize: clamp(Number(parsed.gridSize) || 10, 1, 500),
+        assetSearch: parsed.assetSearch || "",
+        assetQuickFilter: parsed.assetQuickFilter || "",
+        previewZoomMode: ["fit", "100", "small", "print"].includes(
+          parsed.previewZoomMode,
+        )
+          ? parsed.previewZoomMode
+          : "fit",
         layoutTemplateTypes: Array.isArray(parsed.layoutTemplateTypes)
           ? parsed.layoutTemplateTypes
           : null,
@@ -269,10 +323,19 @@
           schemaVersion: SCHEMA_VERSION,
           selectedTemplateTypeId: state.selectedTemplateTypeId,
           selectedSlotId: state.selectedSlotId,
+          cardName: state.cardName,
+          activeSavedCardId: state.activeSavedCardId,
+          savedCards: state.savedCards,
           templateAssetByType: state.templateAssetByType,
           slotStateByType: state.slotStateByType,
           layoutEditorMode: state.layoutEditorMode,
           showGuides: state.showGuides,
+          showGrid: state.showGrid,
+          snapToGrid: state.snapToGrid,
+          gridSize: state.gridSize,
+          assetSearch: state.assetSearch,
+          assetQuickFilter: state.assetQuickFilter,
+          previewZoomMode: state.previewZoomMode,
           layoutTemplateTypes: state.layoutTemplateTypes,
         }),
       );
@@ -285,9 +348,11 @@
     renderTemplateTypeSelect();
     renderTemplateInfo();
     renderTemplateGallery();
+    syncCardControls();
     renderSlotOverlay();
     renderSlotDetails();
     renderLayoutEditor();
+    renderSavedCards();
     renderAssetGallery();
     renderButtons();
     renderStatus();
@@ -368,10 +433,13 @@
       state.selectedSlotId ? "" : "is-idle",
       state.layoutEditorMode ? "is-editing" : "",
       state.showGuides ? "" : "is-hidden-guides",
+      state.layoutEditorMode && state.showGrid ? "has-grid" : "",
     ]
       .filter(Boolean)
       .join(" ");
     elements.slotOverlay.className = overlayClasses;
+    elements.slotOverlay.style.setProperty("--grid-x", `${getGridPreviewSize().x}px`);
+    elements.slotOverlay.style.setProperty("--grid-y", `${getGridPreviewSize().y}px`);
     elements.slotOverlay.innerHTML = type.slots
       .map((slot, index) => {
         const selected = state.selectedSlotId === slot.id;
@@ -455,6 +523,9 @@
   function renderLayoutEditor() {
     elements.layoutEditorToggle.checked = state.layoutEditorMode;
     elements.guidesToggle.checked = state.showGuides;
+    elements.gridToggle.checked = state.showGrid;
+    elements.snapToggle.checked = state.snapToGrid;
+    elements.gridSizeInput.value = String(Math.round(state.gridSize || 10));
     elements.layoutEditorPanel.hidden = !state.layoutEditorMode;
 
     if (!state.layoutEditorMode) {
@@ -480,6 +551,26 @@
     elements.layoutControls.hidden = false;
   }
 
+  function renderSavedCards() {
+    elements.savedCardCount.textContent = String(state.savedCards.length);
+
+    if (!state.savedCards.length) {
+      elements.savedCardSelect.innerHTML =
+        '<option value="">Aucune carte sauvegardee</option>';
+      elements.savedCardSelect.disabled = true;
+      return;
+    }
+
+    elements.savedCardSelect.disabled = false;
+    elements.savedCardSelect.innerHTML = state.savedCards
+      .map((card) => {
+        const name = card.name || card.id || "Carte sans nom";
+        return `<option value="${escapeHtml(card.id)}">${escapeHtml(name)}</option>`;
+      })
+      .join("");
+    elements.savedCardSelect.value = state.activeSavedCardId || state.savedCards[0].id;
+  }
+
   function renderAssetGallery() {
     const type = getCurrentTemplateType();
     const slot = getSelectedSlot();
@@ -500,11 +591,18 @@
     }
 
     const slotState = getSlotState(type.id, slot.id);
-    const assets = getAssetsForCategory(slot.category);
+    const assets = getAssetsForCategory(slot.category).filter((asset) =>
+      layoutUtils.assetMatchesSearch(
+        asset,
+        state.assetSearch,
+        slot.category,
+        state.assetQuickFilter,
+      ),
+    );
     elements.assetCount.textContent = String(assets.length);
 
     if (!assets.length) {
-      elements.assetGallery.innerHTML = `<p class="empty-state">Aucun asset dans la categorie ${escapeHtml(slot.category)}.</p>`;
+      elements.assetGallery.innerHTML = `<p class="empty-state">Aucun asset trouve dans la categorie ${escapeHtml(slot.category)}.</p>`;
       return;
     }
 
@@ -535,8 +633,12 @@
   function renderButtons() {
     const hasTemplate = Boolean(getCurrentTemplateAsset());
     const selectedSlot = getSelectedSlot();
+    const selectedSavedCard = getSelectedSavedCard();
     elements.exportButton.disabled = Boolean(loadError) || !hasTemplate;
+    elements.exportZipButton.disabled = Boolean(loadError) || !state.savedCards.length;
     elements.removeSlotButton.disabled = !selectedSlot || state.layoutEditorMode;
+    elements.loadCardButton.disabled = !selectedSavedCard;
+    elements.duplicateCardButton.disabled = !selectedSavedCard && !getCurrentTemplateType();
   }
 
   function renderStatus() {
@@ -557,6 +659,19 @@
 
     elements.statusMessage.textContent = message;
     elements.statusMessage.className = `status-message is-${kind}`;
+  }
+
+  function syncCardControls() {
+    elements.cardNameInput.value = state.cardName || "";
+    elements.previewZoomSelect.value = state.previewZoomMode || "fit";
+    elements.assetSearchInput.value = state.assetSearch || "";
+    elements.canvasWrap.className = `canvas-wrap zoom-${state.previewZoomMode || "fit"}`;
+    document.querySelectorAll("[data-action='set-asset-filter']").forEach((button) => {
+      button.classList.toggle(
+        "is-active",
+        (button.dataset.filter || "") === (state.assetQuickFilter || ""),
+      );
+    });
   }
 
   function syncSlotControls() {
@@ -619,6 +734,47 @@
     render();
   }
 
+  function handleGridToggle(event) {
+    state.showGrid = event.target.checked;
+    saveState();
+    render();
+  }
+
+  function handleSnapToggle(event) {
+    state.snapToGrid = event.target.checked;
+    saveState();
+  }
+
+  function handleGridSizeInput(event) {
+    state.gridSize = clamp(Number(event.target.value) || 10, 1, 500);
+    saveState();
+    renderSlotOverlay();
+  }
+
+  function handleCardNameInput(event) {
+    state.cardName = event.target.value;
+    saveState();
+  }
+
+  function handlePreviewZoomChange(event) {
+    state.previewZoomMode = event.target.value || "fit";
+    saveState();
+    render();
+  }
+
+  function handleAssetSearchInput(event) {
+    state.assetSearch = event.target.value;
+    saveState();
+    renderAssetGallery();
+    syncCardControls();
+  }
+
+  function handleSavedCardSelectChange(event) {
+    state.activeSavedCardId = event.target.value;
+    saveState();
+    renderButtons();
+  }
+
   function handleClick(event) {
     const actionTarget = event.target.closest("[data-action]");
     if (!actionTarget) {
@@ -649,6 +805,23 @@
       resetLayoutFromOriginalJson();
     } else if (action === "export-png") {
       exportPng();
+    } else if (action === "save-card") {
+      saveCurrentCard();
+    } else if (action === "load-card") {
+      loadSelectedSavedCard();
+    } else if (action === "duplicate-card") {
+      duplicateSelectedCard();
+    } else if (action === "download-card-json") {
+      downloadCurrentCardJson();
+    } else if (action === "import-card-json") {
+      elements.cardJsonImport.click();
+    } else if (action === "export-saved-zip") {
+      exportSavedCardsZip();
+    } else if (action === "set-asset-filter") {
+      state.assetQuickFilter = actionTarget.dataset.filter || "";
+      saveState();
+      renderAssetGallery();
+      syncCardControls();
     }
   }
 
@@ -845,6 +1018,9 @@
     }
 
     state.selectedSlotId = slot.id;
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
     const handle = event.target.dataset.handle || "move";
     activePointerEdit = {
       handle,
@@ -874,7 +1050,7 @@
     const dy = (event.clientY - activePointerEdit.startClientY) * scale.y;
     const start = activePointerEdit.startSlot;
     const patch = getDragPatch(start, activePointerEdit.handle, dx, dy);
-    updateSelectedSlotLayout(patch, { quiet: true });
+    updateSelectedSlotLayout(patch, { quiet: true, snap: state.snapToGrid });
   }
 
   function handleLayoutPointerUp(event) {
@@ -927,6 +1103,41 @@
     return patch;
   }
 
+  function handleLayoutKeyDown(event) {
+    if (!state.layoutEditorMode || !getSelectedSlot()) {
+      return;
+    }
+    if (
+      ["INPUT", "SELECT", "TEXTAREA"].includes(
+        event.target && event.target.tagName ? event.target.tagName : "",
+      )
+    ) {
+      return;
+    }
+
+    const keyMap = {
+      ArrowLeft: [-1, 0],
+      ArrowRight: [1, 0],
+      ArrowUp: [0, -1],
+      ArrowDown: [0, 1],
+    };
+    const delta = keyMap[event.key];
+    if (!delta) {
+      return;
+    }
+
+    event.preventDefault();
+    const slot = getSelectedSlot();
+    const amount = event.shiftKey ? 10 : 1;
+    updateSelectedSlotLayout(
+      {
+        x: (Number(slot.x) || 0) + delta[0] * amount,
+        y: (Number(slot.y) || 0) + delta[1] * amount,
+      },
+      { quiet: true },
+    );
+  }
+
   function updateSelectedSlotLayout(patch, options = {}) {
     const type = getCurrentTemplateType();
     const slot = getSelectedSlot();
@@ -934,11 +1145,12 @@
       return;
     }
 
+    const nextPatch = options.snap ? snapPatch(patch) : patch;
     templateTypes = layoutUtils.updateSlotLayout(
       templateTypes,
       type.id,
       slot.id,
-      patch,
+      nextPatch,
     );
     state.layoutTemplateTypes = layoutUtils.cloneTemplateTypes(templateTypes);
     saveState();
@@ -947,6 +1159,171 @@
     if (!options.quiet) {
       setStatus("Layout sauvegarde localement.", "success");
     }
+  }
+
+  function saveCurrentCard() {
+    const type = getCurrentTemplateType();
+    if (!type) {
+      setStatus("Aucun type de template a sauvegarder.", "warning");
+      return;
+    }
+
+    const existingCard = getSelectedSavedCard();
+    const snapshot = layoutUtils.buildCardSnapshot(state, {
+      cardName: state.cardName,
+      existingCard,
+    });
+    const index = state.savedCards.findIndex((card) => card.id === snapshot.id);
+    if (index >= 0) {
+      state.savedCards[index] = snapshot;
+    } else {
+      state.savedCards.push(snapshot);
+    }
+    state.activeSavedCardId = snapshot.id;
+    saveState();
+    setStatus("Carte sauvegardee localement.", "success");
+    render();
+  }
+
+  function loadSelectedSavedCard() {
+    const card = getSelectedSavedCard();
+    if (!card) {
+      setStatus("Aucune carte sauvegardee selectionnee.", "warning");
+      return;
+    }
+
+    applyCardSnapshot(card);
+    setStatus("Carte chargee.", "success");
+  }
+
+  function duplicateSelectedCard() {
+    const source = getSelectedSavedCard() || layoutUtils.buildCardSnapshot(state, {
+      cardName: state.cardName,
+    });
+    const now = new Date().toISOString();
+    const duplicate = {
+      ...JSON.parse(JSON.stringify(source)),
+      id: `card_${now.replace(/[^0-9a-zA-Z]+/g, "_").replace(/^_+|_+$/g, "")}`,
+      name: `${source.name || "Carte sans nom"} copie`,
+      createdAt: now,
+      updatedAt: now,
+    };
+    state.savedCards.push(duplicate);
+    applyCardSnapshot(duplicate);
+    setStatus("Carte dupliquee localement.", "success");
+  }
+
+  function downloadCurrentCardJson() {
+    const snapshot = layoutUtils.buildCardSnapshot(state, {
+      cardName: state.cardName,
+      existingCard: getSelectedSavedCard(),
+    });
+    const blob = new Blob([`${JSON.stringify(snapshot, null, 2)}\n`], {
+      type: "application/json",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${getExportBaseName(snapshot.name, snapshot.templateTypeId)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setStatus("carte.json telecharge.", "success");
+  }
+
+  function handleCardJsonImport(event) {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const card = normalizeImportedCard(JSON.parse(String(reader.result || "")));
+        if (state.savedCards.some((savedCard) => savedCard.id === card.id)) {
+          card.id = `card_${new Date()
+            .toISOString()
+            .replace(/[^0-9a-zA-Z]+/g, "_")
+            .replace(/^_+|_+$/g, "")}`;
+        }
+        state.savedCards.push(card);
+        applyCardSnapshot(card);
+        setStatus("carte.json importe et charge.", "success");
+      } catch (error) {
+        setStatus("Import impossible : carte.json invalide.", "error");
+      }
+    };
+    reader.onerror = () => {
+      setStatus("Import impossible : fichier illisible.", "error");
+    };
+    reader.readAsText(file);
+  }
+
+  function applyCardSnapshot(card, options = {}) {
+    if (!card || !card.templateTypeId) {
+      return;
+    }
+
+    state.cardName = card.name || "";
+    state.activeSavedCardId = card.id || "";
+    state.selectedTemplateTypeId = card.templateTypeId;
+    state.selectedSlotId = "";
+    state.templateAssetByType[card.templateTypeId] = card.templateAssetId || "";
+    state.slotStateByType[card.templateTypeId] = JSON.parse(
+      JSON.stringify(card.slots || {}),
+    );
+    hydrateStateFromData();
+
+    if (options.save !== false) {
+      saveState();
+    }
+    if (options.render !== false) {
+      render();
+      requestCanvasDraw();
+    }
+  }
+
+  function normalizeImportedCard(card) {
+    if (!card || !card.templateTypeId) {
+      throw new Error("Invalid card");
+    }
+    const now = new Date().toISOString();
+    return {
+      id:
+        card.id ||
+        `card_${now.replace(/[^0-9a-zA-Z]+/g, "_").replace(/^_+|_+$/g, "")}`,
+      name: String(card.name || "").trim(),
+      templateTypeId: String(card.templateTypeId || ""),
+      templateAssetId: String(card.templateAssetId || ""),
+      slots: card.slots && typeof card.slots === "object" ? card.slots : {},
+      createdAt: card.createdAt || now,
+      updatedAt: now,
+    };
+  }
+
+  function getGridSize() {
+    return Math.max(1, Math.round(Number(state.gridSize) || 10));
+  }
+
+  function getGridPreviewSize() {
+    const type = getCurrentTemplateType();
+    const rect = elements.cardCanvas.getBoundingClientRect();
+    const grid = getGridSize();
+    return {
+      x: type && type.width ? (grid / type.width) * rect.width : grid,
+      y: type && type.height ? (grid / type.height) * rect.height : grid,
+    };
+  }
+
+  function snapPatch(patch) {
+    const grid = getGridSize();
+    return Object.keys(patch).reduce((next, key) => {
+      next[key] =
+        ["x", "y", "width", "height"].includes(key) && Number.isFinite(Number(patch[key]))
+          ? Math.round(Number(patch[key]) / grid) * grid
+          : patch[key];
+      return next;
+    }, {});
   }
 
   async function exportPng() {
@@ -965,11 +1342,58 @@
     const type = getCurrentTemplateType();
     const link = document.createElement("a");
     const date = new Date().toISOString().slice(0, 10);
-    link.download = `${type.id}-${date}.png`;
+    link.download = `${getExportBaseName(state.cardName, type.id)}-${date}.png`;
     link.href = elements.cardCanvas.toDataURL("image/png");
     link.click();
     setStatus("PNG HD exporte en taille reelle.", "success");
     renderStatus();
+  }
+
+  async function exportSavedCardsZip() {
+    if (!state.savedCards.length) {
+      setStatus("Aucune carte sauvegardee a exporter.", "warning");
+      renderStatus();
+      return;
+    }
+
+    const previousState = JSON.parse(JSON.stringify(state));
+    const zipFiles = [];
+    let exportedCount = 0;
+
+    try {
+      for (const card of state.savedCards) {
+        applyCardSnapshot(card, { save: false, render: false });
+        const drawn = await drawCanvas();
+        if (!drawn) {
+          continue;
+        }
+
+        const blob = await canvasToBlob(elements.cardCanvas);
+        const fileName = `${getExportBaseName(card.name, card.templateTypeId)}.png`;
+        zipFiles.push({ name: fileName, blob });
+        exportedCount += 1;
+      }
+
+      if (!exportedCount) {
+        throw new Error("No card exported");
+      }
+
+      const zipBlob = await createZipBlob(zipFiles);
+      const link = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `cartes-${date}.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      setStatus(`${exportedCount} carte(s) exportee(s) en ZIP.`, "success");
+    } catch (error) {
+      setStatus("Export ZIP impossible.", "error");
+    } finally {
+      state = previousState;
+      saveState();
+      render();
+      requestCanvasDraw();
+    }
   }
 
   async function copyCurrentTypeJson() {
@@ -1245,6 +1669,12 @@
     return state.selectedSlotId ? getSlotById(state.selectedSlotId) : null;
   }
 
+  function getSelectedSavedCard() {
+    return state.activeSavedCardId
+      ? state.savedCards.find((card) => card.id === state.activeSavedCardId) || null
+      : null;
+  }
+
   function getSlotState(typeId, slotId) {
     const typeSlots = state.slotStateByType[typeId] || {};
     return {
@@ -1271,6 +1701,101 @@
 
   function getSlotZIndex(slot, index) {
     return Number.isFinite(Number(slot.zIndex)) ? Number(slot.zIndex) : index;
+  }
+
+  function getExportBaseName(name, fallback) {
+    return layoutUtils.sanitizeFileName(name) || layoutUtils.sanitizeFileName(fallback) || "card";
+  }
+
+  function canvasToBlob(canvas) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Canvas export failed"));
+        }
+      }, "image/png");
+    });
+  }
+
+  async function createZipBlob(files) {
+    const encoder = new TextEncoder();
+    const localParts = [];
+    const centralParts = [];
+    let offset = 0;
+
+    for (const file of files) {
+      const nameBytes = encoder.encode(file.name);
+      const data = new Uint8Array(await file.blob.arrayBuffer());
+      const crc = crc32(data);
+      const localHeader = createZipHeader({
+        signature: 0x04034b50,
+        nameBytes,
+        crc,
+        size: data.length,
+      });
+      localParts.push(localHeader, data);
+
+      const centralHeader = createZipHeader({
+        signature: 0x02014b50,
+        nameBytes,
+        crc,
+        size: data.length,
+        offset,
+        central: true,
+      });
+      centralParts.push(centralHeader);
+      offset += localHeader.length + data.length;
+    }
+
+    const centralSize = centralParts.reduce((sum, part) => sum + part.length, 0);
+    const end = new Uint8Array(22);
+    const view = new DataView(end.buffer);
+    view.setUint32(0, 0x06054b50, true);
+    view.setUint16(8, files.length, true);
+    view.setUint16(10, files.length, true);
+    view.setUint32(12, centralSize, true);
+    view.setUint32(16, offset, true);
+
+    return new Blob([...localParts, ...centralParts, end], {
+      type: "application/zip",
+    });
+  }
+
+  function createZipHeader({ signature, nameBytes, crc, size, offset = 0, central = false }) {
+    const header = new Uint8Array((central ? 46 : 30) + nameBytes.length);
+    const view = new DataView(header.buffer);
+    view.setUint32(0, signature, true);
+    if (central) {
+      view.setUint16(4, 20, true);
+      view.setUint16(6, 20, true);
+      view.setUint32(16, crc, true);
+      view.setUint32(20, size, true);
+      view.setUint32(24, size, true);
+      view.setUint16(28, nameBytes.length, true);
+      view.setUint32(42, offset, true);
+      header.set(nameBytes, 46);
+    } else {
+      view.setUint16(4, 20, true);
+      view.setUint32(14, crc, true);
+      view.setUint32(18, size, true);
+      view.setUint32(22, size, true);
+      view.setUint16(26, nameBytes.length, true);
+      header.set(nameBytes, 30);
+    }
+    return header;
+  }
+
+  function crc32(data) {
+    let crc = 0xffffffff;
+    for (const byte of data) {
+      crc ^= byte;
+      for (let bit = 0; bit < 8; bit += 1) {
+        crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+      }
+    }
+    return (crc ^ 0xffffffff) >>> 0;
   }
 
   function setStatus(message, kind) {
