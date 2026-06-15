@@ -369,7 +369,43 @@
         "src": "assets/card-builder/creatures/Plainelvl3.png"
       }
     ],
-    "icon": [],
+    "icon": [
+      {
+        "id": "desert",
+        "name": "Desert",
+        "src": "assets/card-builder/icons/Desert.png"
+      },
+      {
+        "id": "eau",
+        "name": "Eau",
+        "src": "assets/card-builder/icons/Eau.png"
+      },
+      {
+        "id": "foret",
+        "name": "Foret",
+        "src": "assets/card-builder/icons/Foret.png"
+      },
+      {
+        "id": "marecage",
+        "name": "Marecage",
+        "src": "assets/card-builder/icons/Marecage.png"
+      },
+      {
+        "id": "montagne",
+        "name": "Montagne",
+        "src": "assets/card-builder/icons/Montagne.png"
+      },
+      {
+        "id": "plaine",
+        "name": "Plaine",
+        "src": "assets/card-builder/icons/Plaine.png"
+      },
+      {
+        "id": "question_mark_outline_256",
+        "name": "Question Mark Outline 256",
+        "src": "assets/card-builder/icons/Question Mark Outline 256.png"
+      }
+    ],
     "bonus_asset": [],
     "restriction": [
       {
