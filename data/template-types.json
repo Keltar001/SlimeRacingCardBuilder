@@ -20,8 +20,8 @@
           "zIndex": 10
         },
         {
-          "id": "restriction_icon",
-          "label": "Restriction",
+          "id": "restriction_icon_1",
+          "label": "Restriction 1",
           "category": "restriction",
           "x": 372,
           "y": 1554,
@@ -30,6 +30,30 @@
           "fit": "contain",
           "shape": "circle",
           "zIndex": 20
+        },
+        {
+          "id": "restriction_icon_2",
+          "label": "Restriction 2",
+          "category": "restriction",
+          "x": 572,
+          "y": 1554,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        },
+        {
+          "id": "restriction_icon_3",
+          "label": "Restriction 3",
+          "category": "restriction",
+          "x": 772,
+          "y": 1554,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 40
         },
         {
           "id": "level_badge",
@@ -41,7 +65,7 @@
           "height": 180,
           "fit": "contain",
           "shape": "circle",
-          "zIndex": 30
+          "zIndex": 50
         }
       ]
     },
@@ -118,6 +142,51 @@
           "fit": "contain",
           "shape": "circle",
           "zIndex": 20
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        },
+        {
+          "id": "creature_cost_1",
+          "label": "Cout Creature 1",
+          "category": "creature",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 40
+        },
+        {
+          "id": "creature_cost_2",
+          "label": "Cout Creature 2",
+          "category": "creature",
+          "x": 360,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 50
+        },
+        {
+          "id": "creature_cost_3",
+          "label": "Cout Creature 3",
+          "category": "creature",
+          "x": 560,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 60
         }
       ]
     },
@@ -162,6 +231,51 @@
           "fit": "contain",
           "shape": "circle",
           "zIndex": 30
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 40
+        },
+        {
+          "id": "creature_cost_1",
+          "label": "Cout Creature 1",
+          "category": "creature",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 50
+        },
+        {
+          "id": "creature_cost_2",
+          "label": "Cout Creature 2",
+          "category": "creature",
+          "x": 360,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 60
+        },
+        {
+          "id": "creature_cost_3",
+          "label": "Cout Creature 3",
+          "category": "creature",
+          "x": 560,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 70
         }
       ]
     },
@@ -218,6 +332,51 @@
           "fit": "contain",
           "shape": "circle",
           "zIndex": 40
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 50
+        },
+        {
+          "id": "creature_cost_1",
+          "label": "Cout Creature 1",
+          "category": "creature",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 60
+        },
+        {
+          "id": "creature_cost_2",
+          "label": "Cout Creature 2",
+          "category": "creature",
+          "x": 360,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 70
+        },
+        {
+          "id": "creature_cost_3",
+          "label": "Cout Creature 3",
+          "category": "creature",
+          "x": 560,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 80
         }
       ]
     },
@@ -250,6 +409,87 @@
           "fit": "contain",
           "shape": "circle",
           "zIndex": 20
+        },
+        {
+          "id": "terrain_icon_1",
+          "label": "Icone Terrain 1",
+          "category": "icon",
+          "x": 990,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 30
+        },
+        {
+          "id": "terrain_icon_2",
+          "label": "Icone Terrain 2",
+          "category": "icon",
+          "x": 1170,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 40
+        },
+        {
+          "id": "terrain_icon_3",
+          "label": "Icone Terrain 3",
+          "category": "icon",
+          "x": 1350,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 50
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 60
+        },
+        {
+          "id": "creature_cost_1",
+          "label": "Cout Creature 1",
+          "category": "creature",
+          "x": 160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 70
+        },
+        {
+          "id": "creature_cost_2",
+          "label": "Cout Creature 2",
+          "category": "creature",
+          "x": 360,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 80
+        },
+        {
+          "id": "creature_cost_3",
+          "label": "Cout Creature 3",
+          "category": "creature",
+          "x": 560,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "zIndex": 90
         }
       ]
     },
@@ -308,6 +548,42 @@
           "zIndex": 40
         },
         {
+          "id": "terrain_icon_4",
+          "label": "Icone Terrain 4",
+          "category": "icon",
+          "x": 990,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 50
+        },
+        {
+          "id": "terrain_icon_5",
+          "label": "Icone Terrain 5",
+          "category": "icon",
+          "x": 1170,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 60
+        },
+        {
+          "id": "terrain_icon_6",
+          "label": "Icone Terrain 6",
+          "category": "icon",
+          "x": 1350,
+          "y": 300,
+          "width": 150,
+          "height": 150,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 70
+        },
+        {
           "id": "marker_icon",
           "label": "Marqueur Ultime",
           "category": "marker",
@@ -317,7 +593,19 @@
           "height": 180,
           "fit": "contain",
           "shape": "circle",
-          "zIndex": 50
+          "zIndex": 80
+        },
+        {
+          "id": "level_badge",
+          "label": "Niveau",
+          "category": "level",
+          "x": 1160,
+          "y": 1420,
+          "width": 180,
+          "height": 180,
+          "fit": "contain",
+          "shape": "circle",
+          "zIndex": 90
         }
       ]
     }
