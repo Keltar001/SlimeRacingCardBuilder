@@ -5,6 +5,7 @@
   const STORAGE_KEY = "slime-racing-card-builder-v1";
   const TEMPLATE_TYPES_URL = "data/template-types.json";
   const ASSETS_URL = "data/assets.json";
+  const layoutUtils = window.CardBuilderLayoutUtils;
 
   const ASSET_CATEGORIES = [
     "template_bonus",
@@ -33,12 +34,14 @@
   const elements = {};
   const imageCache = new Map();
 
+  let originalTemplateTypes = [];
   let templateTypes = [];
   let assetsByCategory = createEmptyAssets();
   let loadError = "";
   let statusMessage = "";
   let statusKind = "info";
   let drawRunId = 0;
+  let activePointerEdit = null;
 
   let state = {
     schemaVersion: SCHEMA_VERSION,
@@ -46,6 +49,9 @@
     selectedSlotId: "",
     templateAssetByType: {},
     slotStateByType: {},
+    layoutEditorMode: false,
+    showGuides: true,
+    layoutTemplateTypes: null,
   };
 
   document.addEventListener("DOMContentLoaded", init);
@@ -62,7 +68,13 @@
         loadJson(ASSETS_URL, "assets.json"),
       ]);
 
-      templateTypes = normalizeTemplateTypes(templatePayload);
+      originalTemplateTypes = normalizeTemplateTypes(templatePayload);
+      templateTypes = state.layoutTemplateTypes
+        ? normalizeTemplateTypes({
+            version: SCHEMA_VERSION,
+            templateTypes: state.layoutTemplateTypes,
+          })
+        : layoutUtils.cloneTemplateTypes(originalTemplateTypes);
       assetsByCategory = normalizeAssets(assetPayload);
       hydrateStateFromData();
       setStatus("", "info");
@@ -93,14 +105,35 @@
     elements.slotOffsetY = document.getElementById("slotOffsetY");
     elements.exportButton = document.getElementById("exportButton");
     elements.removeSlotButton = document.getElementById("removeSlotButton");
+    elements.layoutEditorToggle = document.getElementById("layoutEditorToggle");
+    elements.guidesToggle = document.getElementById("guidesToggle");
+    elements.layoutEditorPanel = document.getElementById("layoutEditorPanel");
+    elements.layoutSlotDetails = document.getElementById("layoutSlotDetails");
+    elements.layoutControls = document.getElementById("layoutControls");
+    elements.layoutX = document.getElementById("layoutX");
+    elements.layoutY = document.getElementById("layoutY");
+    elements.layoutWidth = document.getElementById("layoutWidth");
+    elements.layoutHeight = document.getElementById("layoutHeight");
+    elements.layoutFit = document.getElementById("layoutFit");
+    elements.layoutShape = document.getElementById("layoutShape");
+    elements.layoutZIndex = document.getElementById("layoutZIndex");
+    elements.templateTypesImport = document.getElementById("templateTypesImport");
   }
 
   function bindEvents() {
     document.addEventListener("click", handleClick);
     document.addEventListener("error", handleImageElementError, true);
+    document.addEventListener("pointermove", handleLayoutPointerMove);
+    document.addEventListener("pointerup", handleLayoutPointerUp);
     elements.templateTypeSelect.addEventListener("change", handleTemplateTypeChange);
+    elements.layoutEditorToggle.addEventListener("change", handleLayoutEditorToggle);
+    elements.guidesToggle.addEventListener("change", handleGuidesToggle);
     elements.slotControls.addEventListener("input", handleSlotControlInput);
     elements.slotControls.addEventListener("change", handleSlotControlInput);
+    elements.layoutControls.addEventListener("input", handleLayoutControlInput);
+    elements.layoutControls.addEventListener("change", handleLayoutControlInput);
+    elements.slotOverlay.addEventListener("pointerdown", handleLayoutPointerDown);
+    elements.templateTypesImport.addEventListener("change", handleTemplateTypesImport);
   }
 
   async function loadJson(url, label) {
@@ -215,6 +248,11 @@
         selectedSlotId: parsed.selectedSlotId || "",
         templateAssetByType: parsed.templateAssetByType || {},
         slotStateByType: parsed.slotStateByType || {},
+        layoutEditorMode: Boolean(parsed.layoutEditorMode),
+        showGuides: parsed.showGuides !== false,
+        layoutTemplateTypes: Array.isArray(parsed.layoutTemplateTypes)
+          ? parsed.layoutTemplateTypes
+          : null,
       };
     } catch (error) {
       statusMessage = "Sauvegarde locale ignoree : donnees illisibles.";
@@ -233,6 +271,9 @@
           selectedSlotId: state.selectedSlotId,
           templateAssetByType: state.templateAssetByType,
           slotStateByType: state.slotStateByType,
+          layoutEditorMode: state.layoutEditorMode,
+          showGuides: state.showGuides,
+          layoutTemplateTypes: state.layoutTemplateTypes,
         }),
       );
     } catch (error) {
@@ -246,10 +287,12 @@
     renderTemplateGallery();
     renderSlotOverlay();
     renderSlotDetails();
+    renderLayoutEditor();
     renderAssetGallery();
     renderButtons();
     renderStatus();
     syncSlotControls();
+    syncLayoutControls();
   }
 
   function renderTemplateTypeSelect() {
@@ -320,9 +363,15 @@
       return;
     }
 
-    elements.slotOverlay.className = `slot-overlay${
-      state.selectedSlotId ? "" : " is-idle"
-    }`;
+    const overlayClasses = [
+      "slot-overlay",
+      state.selectedSlotId ? "" : "is-idle",
+      state.layoutEditorMode ? "is-editing" : "",
+      state.showGuides ? "" : "is-hidden-guides",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    elements.slotOverlay.className = overlayClasses;
     elements.slotOverlay.innerHTML = type.slots
       .map((slot, index) => {
         const selected = state.selectedSlotId === slot.id;
@@ -333,6 +382,7 @@
         const classes = [
           "slot-hotspot",
           selected ? "is-selected" : "",
+          state.layoutEditorMode ? "is-editing" : "",
           slot.shape === "circle" ? "is-circle" : "",
         ]
           .filter(Boolean)
@@ -347,10 +397,20 @@
             style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;z-index:${getSlotZIndex(slot, index)}"
             title="${escapeHtml(slot.label || slot.id)}">
             <span class="slot-label">${escapeHtml(slot.label || slot.id)}</span>
+            ${state.layoutEditorMode && selected ? renderResizeHandles() : ""}
           </button>
         `;
       })
       .join("");
+  }
+
+  function renderResizeHandles() {
+    return `
+      <span class="resize-handle" data-handle="nw" aria-hidden="true"></span>
+      <span class="resize-handle" data-handle="ne" aria-hidden="true"></span>
+      <span class="resize-handle" data-handle="sw" aria-hidden="true"></span>
+      <span class="resize-handle" data-handle="se" aria-hidden="true"></span>
+    `;
   }
 
   function renderSlotDetails() {
@@ -371,6 +431,13 @@
       return;
     }
 
+    if (state.layoutEditorMode) {
+      elements.slotDetails.innerHTML =
+        '<p class="empty-state">Mode edition actif : utilise le panneau Layout Editor.</p>';
+      elements.slotControls.hidden = true;
+      return;
+    }
+
     const slotState = getSlotState(type.id, slot.id);
     const asset = slotState.assetId
       ? getAssetById(slot.category, slotState.assetId)
@@ -385,10 +452,45 @@
     elements.slotControls.hidden = false;
   }
 
+  function renderLayoutEditor() {
+    elements.layoutEditorToggle.checked = state.layoutEditorMode;
+    elements.guidesToggle.checked = state.showGuides;
+    elements.layoutEditorPanel.hidden = !state.layoutEditorMode;
+
+    if (!state.layoutEditorMode) {
+      elements.layoutControls.hidden = true;
+      return;
+    }
+
+    const type = getCurrentTemplateType();
+    const slot = getSelectedSlot();
+    if (!type || !slot) {
+      elements.layoutSlotDetails.innerHTML =
+        '<p class="empty-state">Selectionne un slot pour modifier ses zones.</p>';
+      elements.layoutControls.hidden = true;
+      return;
+    }
+
+    elements.layoutSlotDetails.innerHTML = `
+      <strong>${escapeHtml(slot.label || slot.id)}</strong>
+      <span>ID : ${escapeHtml(slot.id)}</span><br>
+      <span>Categorie : ${escapeHtml(slot.category)}</span><br>
+      <span>Type : ${escapeHtml(type.id)}</span>
+    `;
+    elements.layoutControls.hidden = false;
+  }
+
   function renderAssetGallery() {
     const type = getCurrentTemplateType();
     const slot = getSelectedSlot();
     const templateAsset = getCurrentTemplateAsset();
+
+    if (state.layoutEditorMode) {
+      elements.assetCount.textContent = "0";
+      elements.assetGallery.innerHTML =
+        "<p class=\"empty-state\">Mode edition actif : la galerie d'images est desactivee.</p>";
+      return;
+    }
 
     if (!type || !templateAsset || !slot) {
       elements.assetCount.textContent = "0";
@@ -434,7 +536,7 @@
     const hasTemplate = Boolean(getCurrentTemplateAsset());
     const selectedSlot = getSelectedSlot();
     elements.exportButton.disabled = Boolean(loadError) || !hasTemplate;
-    elements.removeSlotButton.disabled = !selectedSlot;
+    elements.removeSlotButton.disabled = !selectedSlot || state.layoutEditorMode;
   }
 
   function renderStatus() {
@@ -472,6 +574,23 @@
     elements.slotOffsetY.value = String(Math.round(Number(slotState.offsetY) || 0));
   }
 
+  function syncLayoutControls() {
+    const slot = getSelectedSlot();
+    if (!state.layoutEditorMode || !slot || elements.layoutControls.hidden) {
+      return;
+    }
+
+    elements.layoutX.value = String(Math.round(Number(slot.x) || 0));
+    elements.layoutY.value = String(Math.round(Number(slot.y) || 0));
+    elements.layoutWidth.value = String(Math.max(1, Math.round(Number(slot.width) || 1)));
+    elements.layoutHeight.value = String(
+      Math.max(1, Math.round(Number(slot.height) || 1)),
+    );
+    elements.layoutFit.value = slot.fit === "cover" ? "cover" : "contain";
+    elements.layoutShape.value = slot.shape === "circle" ? "circle" : "";
+    elements.layoutZIndex.value = String(Math.max(0, Math.round(Number(slot.zIndex) || 0)));
+  }
+
   function handleTemplateTypeChange(event) {
     state.selectedTemplateTypeId = event.target.value;
     state.selectedSlotId = "";
@@ -479,6 +598,25 @@
     setStatus("", "info");
     render();
     requestCanvasDraw();
+  }
+
+  function handleLayoutEditorToggle(event) {
+    state.layoutEditorMode = event.target.checked;
+    if (state.layoutEditorMode) {
+      state.showGuides = true;
+      setStatus("Mode edition des zones actif.", "info");
+    } else {
+      setStatus("", "info");
+    }
+    saveState();
+    render();
+    requestCanvasDraw();
+  }
+
+  function handleGuidesToggle(event) {
+    state.showGuides = event.target.checked;
+    saveState();
+    render();
   }
 
   function handleClick(event) {
@@ -501,6 +639,14 @@
       removeSelectedSlotImage();
     } else if (action === "reset-slot-position") {
       resetSelectedSlotPosition();
+    } else if (action === "copy-current-type-json") {
+      copyCurrentTypeJson();
+    } else if (action === "download-template-types") {
+      downloadTemplateTypesJson();
+    } else if (action === "import-template-types") {
+      elements.templateTypesImport.click();
+    } else if (action === "reset-layout-json") {
+      resetLayoutFromOriginalJson();
     } else if (action === "export-png") {
       exportPng();
     }
@@ -530,7 +676,9 @@
     const type = getCurrentTemplateType();
     const slotState = getSlotState(type.id, slot.id);
 
-    if (!slotState.assetId) {
+    if (state.layoutEditorMode) {
+      setStatus("Slot selectionne pour edition des zones.", "info");
+    } else if (!slotState.assetId) {
       setStatus("Slot selectionne sans image choisie.", "warning");
     } else {
       setStatus("", "info");
@@ -542,6 +690,11 @@
   }
 
   function selectSlotAsset(assetId) {
+    if (state.layoutEditorMode) {
+      setStatus("Mode edition actif : selection d'image desactivee.", "warning");
+      return;
+    }
+
     const type = getCurrentTemplateType();
     const slot = getSelectedSlot();
     if (!type || !slot) {
@@ -646,6 +799,156 @@
     requestCanvasDraw();
   }
 
+  function handleLayoutControlInput(event) {
+    const slot = getSelectedSlot();
+    if (!state.layoutEditorMode || !slot) {
+      return;
+    }
+
+    const patch = {};
+    if (event.target === elements.layoutX) {
+      patch.x = elements.layoutX.value;
+    } else if (event.target === elements.layoutY) {
+      patch.y = elements.layoutY.value;
+    } else if (event.target === elements.layoutWidth) {
+      patch.width = elements.layoutWidth.value;
+    } else if (event.target === elements.layoutHeight) {
+      patch.height = elements.layoutHeight.value;
+    } else if (event.target === elements.layoutFit) {
+      patch.fit = elements.layoutFit.value;
+    } else if (event.target === elements.layoutShape) {
+      patch.shape = elements.layoutShape.value;
+    } else if (event.target === elements.layoutZIndex) {
+      patch.zIndex = elements.layoutZIndex.value;
+    } else {
+      return;
+    }
+
+    updateSelectedSlotLayout(patch);
+  }
+
+  function handleLayoutPointerDown(event) {
+    if (!state.layoutEditorMode) {
+      return;
+    }
+
+    const slotButton = event.target.closest(".slot-hotspot");
+    if (!slotButton) {
+      return;
+    }
+
+    event.preventDefault();
+    const slot = getSlotById(slotButton.dataset.slotId);
+    const type = getCurrentTemplateType();
+    if (!slot || !type) {
+      return;
+    }
+
+    state.selectedSlotId = slot.id;
+    const handle = event.target.dataset.handle || "move";
+    activePointerEdit = {
+      handle,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      startSlot: { ...slot },
+      typeWidth: type.width,
+      typeHeight: type.height,
+    };
+    saveState();
+    render();
+  }
+
+  function handleLayoutPointerMove(event) {
+    if (!activePointerEdit || event.pointerId !== activePointerEdit.pointerId) {
+      return;
+    }
+
+    const type = getCurrentTemplateType();
+    if (!type) {
+      return;
+    }
+
+    const scale = getCanvasScale();
+    const dx = (event.clientX - activePointerEdit.startClientX) * scale.x;
+    const dy = (event.clientY - activePointerEdit.startClientY) * scale.y;
+    const start = activePointerEdit.startSlot;
+    const patch = getDragPatch(start, activePointerEdit.handle, dx, dy);
+    updateSelectedSlotLayout(patch, { quiet: true });
+  }
+
+  function handleLayoutPointerUp(event) {
+    if (!activePointerEdit || event.pointerId !== activePointerEdit.pointerId) {
+      return;
+    }
+
+    activePointerEdit = null;
+    saveState();
+    setStatus("Layout sauvegarde localement.", "success");
+  }
+
+  function getCanvasScale() {
+    const rect = elements.cardCanvas.getBoundingClientRect();
+    const type = getCurrentTemplateType();
+    return {
+      x: type && rect.width ? type.width / rect.width : 1,
+      y: type && rect.height ? type.height / rect.height : 1,
+    };
+  }
+
+  function getDragPatch(start, handle, dx, dy) {
+    const x = Number(start.x) || 0;
+    const y = Number(start.y) || 0;
+    const width = Number(start.width) || 1;
+    const height = Number(start.height) || 1;
+
+    if (handle === "move") {
+      return {
+        x: x + dx,
+        y: y + dy,
+      };
+    }
+
+    const patch = {};
+    if (handle.includes("w")) {
+      patch.x = x + dx;
+      patch.width = width - dx;
+    }
+    if (handle.includes("e")) {
+      patch.width = width + dx;
+    }
+    if (handle.includes("n")) {
+      patch.y = y + dy;
+      patch.height = height - dy;
+    }
+    if (handle.includes("s")) {
+      patch.height = height + dy;
+    }
+    return patch;
+  }
+
+  function updateSelectedSlotLayout(patch, options = {}) {
+    const type = getCurrentTemplateType();
+    const slot = getSelectedSlot();
+    if (!type || !slot) {
+      return;
+    }
+
+    templateTypes = layoutUtils.updateSlotLayout(
+      templateTypes,
+      type.id,
+      slot.id,
+      patch,
+    );
+    state.layoutTemplateTypes = layoutUtils.cloneTemplateTypes(templateTypes);
+    saveState();
+    render();
+    requestCanvasDraw();
+    if (!options.quiet) {
+      setStatus("Layout sauvegarde localement.", "success");
+    }
+  }
+
   async function exportPng() {
     if (!getCurrentTemplateAsset()) {
       setStatus("Export impossible : aucune template n'est choisie.", "error");
@@ -667,6 +970,81 @@
     link.click();
     setStatus("PNG HD exporte en taille reelle.", "success");
     renderStatus();
+  }
+
+  async function copyCurrentTypeJson() {
+    const type = getCurrentTemplateType();
+    if (!type) {
+      setStatus("Aucun type courant a copier.", "warning");
+      return;
+    }
+
+    const text = JSON.stringify(type, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus("JSON du type actuel copie.", "success");
+    } catch (error) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+      setStatus("JSON du type actuel copie.", "success");
+    }
+  }
+
+  function downloadTemplateTypesJson() {
+    const payload = layoutUtils.buildTemplateTypesPayload(templateTypes);
+    const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], {
+      type: "application/json",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "template-types.json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setStatus("template-types.json telecharge.", "success");
+  }
+
+  function handleTemplateTypesImport(event) {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const payload = JSON.parse(String(reader.result || ""));
+        const importedTypes = normalizeTemplateTypes(payload);
+        templateTypes = importedTypes;
+        state.layoutTemplateTypes = layoutUtils.cloneTemplateTypes(templateTypes);
+        hydrateStateFromData();
+        saveState();
+        setStatus("template-types.json importe et sauvegarde localement.", "success");
+        render();
+        requestCanvasDraw();
+      } catch (error) {
+        setStatus("Import impossible : template-types.json invalide.", "error");
+      }
+    };
+    reader.onerror = () => {
+      setStatus("Import impossible : fichier illisible.", "error");
+    };
+    reader.readAsText(file);
+  }
+
+  function resetLayoutFromOriginalJson() {
+    templateTypes = layoutUtils.cloneTemplateTypes(originalTemplateTypes);
+    state.layoutTemplateTypes = null;
+    state.selectedSlotId = "";
+    hydrateStateFromData();
+    saveState();
+    setStatus("Layout restaure depuis le JSON original.", "success");
+    render();
+    requestCanvasDraw();
   }
 
   function requestCanvasDraw() {

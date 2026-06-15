@@ -122,6 +122,26 @@ input[type="range"] {
   gap: 0.55rem;
 }
 
+.toggle-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.63rem 0.75rem;
+}
+
+.toggle-action input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent);
+}
+
 .top-actions .secondary-action,
 .slot-controls .secondary-action {
   background: #ffffff;
@@ -324,9 +344,18 @@ input[type="range"] {
 }
 
 .slot-overlay.is-idle .slot-hotspot,
+.slot-overlay.is-editing .slot-hotspot,
 .slot-hotspot:hover,
 .slot-hotspot:focus-visible,
 .slot-hotspot.is-selected {
+  opacity: 1;
+}
+
+.slot-overlay.is-hidden-guides .slot-hotspot {
+  opacity: 0;
+}
+
+.slot-overlay.is-hidden-guides .slot-hotspot.is-selected {
   opacity: 1;
 }
 
@@ -334,6 +363,12 @@ input[type="range"] {
   border-style: solid;
   background: rgba(47, 154, 102, 0.16);
   box-shadow: 0 0 0 2px rgba(47, 154, 102, 0.22);
+}
+
+.slot-hotspot.is-editing {
+  border: 2px solid rgba(31, 112, 74, 0.92);
+  background: rgba(47, 154, 102, 0.12);
+  cursor: move;
 }
 
 .slot-hotspot.is-circle {
@@ -353,6 +388,41 @@ input[type="range"] {
   line-height: 1.15;
   padding: 0.25rem 0.35rem;
   pointer-events: none;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-radius: 3px;
+  background: var(--accent-dark);
+  box-shadow: 0 1px 5px rgba(20, 40, 25, 0.25);
+  pointer-events: auto;
+}
+
+.resize-handle[data-handle="nw"] {
+  left: -7px;
+  top: -7px;
+  cursor: nwse-resize;
+}
+
+.resize-handle[data-handle="ne"] {
+  right: -7px;
+  top: -7px;
+  cursor: nesw-resize;
+}
+
+.resize-handle[data-handle="sw"] {
+  left: -7px;
+  bottom: -7px;
+  cursor: nesw-resize;
+}
+
+.resize-handle[data-handle="se"] {
+  right: -7px;
+  bottom: -7px;
+  cursor: nwse-resize;
 }
 
 .slot-details {
@@ -392,6 +462,40 @@ input[type="range"] {
 .control-row[for="slotOffsetX"],
 .control-row[for="slotOffsetY"] {
   grid-template-columns: 82px minmax(0, 1fr);
+}
+
+.layout-editor-panel {
+  background: #fbfdfb;
+}
+
+.layout-controls {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+
+.control-row-compact {
+  grid-template-columns: 72px minmax(0, 1fr);
+}
+
+.control-row-compact select {
+  padding: 0.45rem 0.5rem;
+}
+
+.layout-actions {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.layout-actions .secondary-action {
+  background: #ffffff;
+  color: var(--accent-dark);
+  width: 100%;
+}
+
+.layout-actions .secondary-action:hover {
+  background: var(--panel-strong);
 }
 
 @media (max-width: 1120px) {

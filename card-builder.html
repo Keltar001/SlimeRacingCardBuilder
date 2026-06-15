@@ -13,6 +13,14 @@
         <h1>Card Builder</h1>
       </div>
       <div class="top-actions" aria-label="Actions de carte">
+        <label class="toggle-action">
+          <input id="layoutEditorToggle" type="checkbox">
+          <span>Mode edition des zones</span>
+        </label>
+        <label class="toggle-action">
+          <input id="guidesToggle" type="checkbox" checked>
+          <span>Guides</span>
+        </label>
         <button type="button" data-action="reset-card">Reset carte</button>
         <button type="button" id="removeSlotButton" data-action="remove-slot-image" disabled>
           Retirer l'image du slot
@@ -76,6 +84,64 @@
           </div>
         </section>
 
+        <section id="layoutEditorPanel" class="panel-section layout-editor-panel" hidden>
+          <div class="section-heading">
+            <h2>Layout Editor</h2>
+          </div>
+          <div id="layoutSlotDetails" class="slot-details"></div>
+          <div id="layoutControls" class="layout-controls" hidden>
+            <label class="control-row control-row-compact" for="layoutX">
+              <span>X</span>
+              <input id="layoutX" type="number" step="1">
+            </label>
+            <label class="control-row control-row-compact" for="layoutY">
+              <span>Y</span>
+              <input id="layoutY" type="number" step="1">
+            </label>
+            <label class="control-row control-row-compact" for="layoutWidth">
+              <span>Width</span>
+              <input id="layoutWidth" type="number" min="1" step="1">
+            </label>
+            <label class="control-row control-row-compact" for="layoutHeight">
+              <span>Height</span>
+              <input id="layoutHeight" type="number" min="1" step="1">
+            </label>
+            <label class="control-row control-row-compact" for="layoutFit">
+              <span>Fit</span>
+              <select id="layoutFit">
+                <option value="contain">contain</option>
+                <option value="cover">cover</option>
+              </select>
+            </label>
+            <label class="control-row control-row-compact" for="layoutShape">
+              <span>Shape</span>
+              <select id="layoutShape">
+                <option value="">rect</option>
+                <option value="circle">circle</option>
+              </select>
+            </label>
+            <label class="control-row control-row-compact" for="layoutZIndex">
+              <span>zIndex</span>
+              <input id="layoutZIndex" type="number" min="0" step="1">
+            </label>
+          </div>
+          <div class="layout-actions">
+            <button type="button" class="secondary-action" data-action="copy-current-type-json">
+              Copier JSON du type actuel
+            </button>
+            <button type="button" class="secondary-action" data-action="download-template-types">
+              Télécharger template-types.json
+            </button>
+            <button type="button" class="secondary-action" data-action="import-template-types">
+              Importer template-types.json
+            </button>
+            <button type="button" class="secondary-action" data-action="reset-layout-json">
+              Reset depuis JSON original
+            </button>
+            <input id="templateTypesImport" type="file" accept="application/json,.json" hidden>
+          </div>
+        </section>
+
         <section class="panel-section">
           <div class="section-heading">
             <h2>Galerie</h2>
@@ -86,6 +152,7 @@
       </aside>
     </main>
 
+    <script src="scripts/layout-editor-utils.js"></script>
     <script src="card-builder.js"></script>
   </body>
 </html>
