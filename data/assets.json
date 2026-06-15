@@ -145,6 +145,136 @@
         "id": "slimeeau3",
         "name": "SlimeEau3",
         "src": "assets/card-builder/slimes/SlimeEau3.png"
+      },
+      {
+        "id": "slimeeaudesertlvl2_transparent",
+        "name": "SlimeEauDesertlvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimeEauDesertlvl2_transparent.png"
+      },
+      {
+        "id": "slimeeaumarecageforet3",
+        "name": "SlimeEauMarecageForet3",
+        "src": "assets/card-builder/slimes/SlimeEauMarecageForet3.png"
+      },
+      {
+        "id": "slimeeaumontagnemarecage3",
+        "name": "SlimeEauMontagneMarecage3",
+        "src": "assets/card-builder/slimes/SlimeEauMontagneMarecage3.png"
+      },
+      {
+        "id": "slimeeauplainelvl2_transparent",
+        "name": "SlimeEauPlainelvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimeEauPlainelvl2_transparent.png"
+      },
+      {
+        "id": "slimeforet1",
+        "name": "SlimeForet1",
+        "src": "assets/card-builder/slimes/SlimeForet1.png"
+      },
+      {
+        "id": "slimeforet2",
+        "name": "SlimeForet2",
+        "src": "assets/card-builder/slimes/SlimeForet2.png"
+      },
+      {
+        "id": "slimeforet3",
+        "name": "SlimeForet3",
+        "src": "assets/card-builder/slimes/SlimeForet3.png"
+      },
+      {
+        "id": "slimeforetmarecagelvl2_transparent",
+        "name": "SlimeForetMarecagelvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimeForetMarecagelvl2_transparent.png"
+      },
+      {
+        "id": "slimemarecage1",
+        "name": "SlimeMarecage1",
+        "src": "assets/card-builder/slimes/SlimeMarecage1.png"
+      },
+      {
+        "id": "slimemarecage2",
+        "name": "SlimeMarecage2",
+        "src": "assets/card-builder/slimes/SlimeMarecage2.png"
+      },
+      {
+        "id": "slimemarecage3",
+        "name": "SlimeMarecage3",
+        "src": "assets/card-builder/slimes/SlimeMarecage3.png"
+      },
+      {
+        "id": "slimemarecagedesertlvl2_transparent",
+        "name": "SlimeMarecageDesertlvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimeMarecageDesertlvl2_transparent.png"
+      },
+      {
+        "id": "slimemontagne1",
+        "name": "SlimeMontagne1",
+        "src": "assets/card-builder/slimes/SlimeMontagne1.png"
+      },
+      {
+        "id": "slimemontagne2",
+        "name": "SlimeMontagne2",
+        "src": "assets/card-builder/slimes/SlimeMontagne2.png"
+      },
+      {
+        "id": "slimemontagne3",
+        "name": "SlimeMontagne3",
+        "src": "assets/card-builder/slimes/SlimeMontagne3.png"
+      },
+      {
+        "id": "slimemontagneforetlvl2_transparent",
+        "name": "SlimeMontagneForetlvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimeMontagneForetlvl2_transparent.png"
+      },
+      {
+        "id": "slimeplaine1",
+        "name": "SlimePlaine1",
+        "src": "assets/card-builder/slimes/SlimePlaine1.png"
+      },
+      {
+        "id": "slimeplaine2",
+        "name": "SlimePlaine2",
+        "src": "assets/card-builder/slimes/SlimePlaine2.png"
+      },
+      {
+        "id": "slimeplaine3",
+        "name": "SlimePlaine3",
+        "src": "assets/card-builder/slimes/SlimePlaine3.png"
+      },
+      {
+        "id": "slimeplaineforetdesert3",
+        "name": "SlimePlaineForetDesert3",
+        "src": "assets/card-builder/slimes/SlimePlaineForetDesert3.png"
+      },
+      {
+        "id": "slimeplainemontagnedesert3",
+        "name": "SlimePlaineMontagneDesert3",
+        "src": "assets/card-builder/slimes/SlimePlaineMontagneDesert3.png"
+      },
+      {
+        "id": "slimeplainemontagnelvl2_transparent",
+        "name": "SlimePlaineMontagnelvl2 Transparent",
+        "src": "assets/card-builder/slimes/SlimePlaineMontagnelvl2_transparent.png"
+      },
+      {
+        "id": "slimesecreteaudesert_transparent",
+        "name": "SlimeSecretEauDesert Transparent",
+        "src": "assets/card-builder/slimes/SlimeSecretEauDesert_transparent.png"
+      },
+      {
+        "id": "slimesecretmontagnemarecage_transparent",
+        "name": "SlimeSecretMontagneMarecage Transparent",
+        "src": "assets/card-builder/slimes/SlimeSecretMontagneMarecage_transparent.png"
+      },
+      {
+        "id": "slimesecretplaineforet_transparent",
+        "name": "SlimeSecretPlaineForet Transparent",
+        "src": "assets/card-builder/slimes/SlimeSecretPlaineForet_transparent.png"
+      },
+      {
+        "id": "slimesecretultime_transparent",
+        "name": "SlimeSecretUltime Transparent",
+        "src": "assets/card-builder/slimes/SlimeSecretUltime_transparent.png"
       }
     ],
     "creature": [
