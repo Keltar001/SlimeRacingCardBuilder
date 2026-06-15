@@ -13,6 +13,19 @@
         <h1>Card Builder</h1>
       </div>
       <div class="top-actions" aria-label="Actions de carte">
+        <label class="card-name-field" for="cardNameInput">
+          <span>Nom de la carte</span>
+          <input id="cardNameInput" type="text" placeholder="Ma carte">
+        </label>
+        <label class="preview-zoom-field" for="previewZoomSelect">
+          <span>Preview</span>
+          <select id="previewZoomSelect">
+            <option value="fit">Ajuster</option>
+            <option value="100">100%</option>
+            <option value="small">Petite carte</option>
+            <option value="print">Impression</option>
+          </select>
+        </label>
         <label class="toggle-action">
           <input id="layoutEditorToggle" type="checkbox">
           <span>Mode edition des zones</span>
@@ -27,6 +40,9 @@
         </button>
         <button type="button" id="exportButton" data-action="export-png" disabled>
           Exporter PNG HD
+        </button>
+        <button type="button" id="exportZipButton" data-action="export-saved-zip" disabled>
+          Exporter toutes les cartes en ZIP
         </button>
       </div>
     </header>
@@ -88,6 +104,20 @@
           <div class="section-heading">
             <h2>Layout Editor</h2>
           </div>
+          <div class="layout-grid-options">
+            <label class="toggle-action">
+              <input id="gridToggle" type="checkbox">
+              <span>Grille</span>
+            </label>
+            <label class="toggle-action">
+              <input id="snapToggle" type="checkbox">
+              <span>Snap</span>
+            </label>
+            <label class="control-row control-row-compact" for="gridSizeInput">
+              <span>Taille grille</span>
+              <input id="gridSizeInput" type="number" min="1" step="1" value="10">
+            </label>
+          </div>
           <div id="layoutSlotDetails" class="slot-details"></div>
           <div id="layoutControls" class="layout-controls" hidden>
             <label class="control-row control-row-compact" for="layoutX">
@@ -144,8 +174,39 @@
 
         <section class="panel-section">
           <div class="section-heading">
+            <h2>Cartes sauvegardees</h2>
+            <span id="savedCardCount" class="pill">0</span>
+          </div>
+          <label class="field-label" for="savedCardSelect">Carte</label>
+          <select id="savedCardSelect"></select>
+          <div class="saved-card-actions">
+            <button type="button" class="secondary-action" data-action="save-card">Sauvegarder carte</button>
+            <button type="button" class="secondary-action" id="loadCardButton" data-action="load-card" disabled>Charger carte</button>
+            <button type="button" class="secondary-action" id="duplicateCardButton" data-action="duplicate-card" disabled>Dupliquer carte</button>
+            <button type="button" class="secondary-action" data-action="download-card-json">Telecharger carte.json</button>
+            <button type="button" class="secondary-action" data-action="import-card-json">Importer carte.json</button>
+            <input id="cardJsonImport" type="file" accept="application/json,.json" hidden>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
             <h2>Galerie</h2>
             <span id="assetCount" class="pill">0</span>
+          </div>
+          <label class="field-label" for="assetSearchInput">Recherche assets</label>
+          <input id="assetSearchInput" type="search" placeholder="nom, id, categorie">
+          <div class="quick-filters" aria-label="Filtres rapides">
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="">Tout</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="foret">foret</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="plaine">plaine</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="marecage">marecage</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="eau">eau</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="desert">desert</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="montagne">montagne</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="lvl1">lvl1</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="lvl2">lvl2</button>
+            <button type="button" class="filter-chip" data-action="set-asset-filter" data-filter="lvl3">lvl3</button>
           </div>
           <div id="assetGallery" class="thumb-grid"></div>
         </section>

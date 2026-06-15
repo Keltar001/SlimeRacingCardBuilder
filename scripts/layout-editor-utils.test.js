@@ -2,8 +2,11 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 
 const {
+  assetMatchesSearch,
+  buildCardSnapshot,
   buildTemplateTypesPayload,
   cloneTemplateTypes,
+  sanitizeFileName,
   updateSlotLayout,
 } = require("./layout-editor-utils.js");
 
@@ -70,4 +73,57 @@ test("buildTemplateTypesPayload returns a complete versioned payload", () => {
     ["template_slime_bi", "template_bonus"],
   );
   assert.equal(payload.templateTypes[0].slots[0].fit, "contain");
+});
+
+test("sanitizeFileName creates stable export-safe names", () => {
+  assert.equal(sanitizeFileName("Slime Eau / Plaine lvl2"), "Slime_Eau_Plaine_lvl2");
+  assert.equal(sanitizeFileName("  Éclair spécial !!!  "), "Eclair_special");
+  assert.equal(sanitizeFileName(""), "");
+});
+
+test("buildCardSnapshot stores card identity and selected slot state", () => {
+  const now = "2026-06-15T12:00:00.000Z";
+  const snapshot = buildCardSnapshot(
+    {
+      selectedTemplateTypeId: "template_slime_mono",
+      templateAssetByType: { template_slime_mono: "template_1" },
+      slotStateByType: {
+        template_slime_mono: {
+          slime_main: { assetId: "slime_1", zoom: 1.2, offsetX: 3, offsetY: -4 },
+        },
+      },
+    },
+    {
+      cardName: "Slime Test",
+      existingCard: { id: "card_1", createdAt: "2026-06-14T10:00:00.000Z" },
+      now,
+    },
+  );
+
+  assert.equal(snapshot.id, "card_1");
+  assert.equal(snapshot.name, "Slime Test");
+  assert.equal(snapshot.templateTypeId, "template_slime_mono");
+  assert.equal(snapshot.templateAssetId, "template_1");
+  assert.equal(snapshot.createdAt, "2026-06-14T10:00:00.000Z");
+  assert.equal(snapshot.updatedAt, now);
+  assert.deepEqual(snapshot.slots.slime_main, {
+    assetId: "slime_1",
+    zoom: 1.2,
+    offsetX: 3,
+    offsetY: -4,
+  });
+});
+
+test("assetMatchesSearch filters by text, category, terrain, and level", () => {
+  const asset = {
+    id: "slime_eau_plaine_lvl2",
+    name: "Slime Eau Plaine Lvl2",
+    src: "assets/card-builder/slimes/SlimeEauPlainelvl2_transparent.png",
+  };
+
+  assert.equal(assetMatchesSearch(asset, "plaine", "slime", ""), true);
+  assert.equal(assetMatchesSearch(asset, "icon", "slime", ""), false);
+  assert.equal(assetMatchesSearch(asset, "", "slime", "eau"), true);
+  assert.equal(assetMatchesSearch(asset, "", "slime", "lvl2"), true);
+  assert.equal(assetMatchesSearch(asset, "", "slime", "desert"), false);
 });
