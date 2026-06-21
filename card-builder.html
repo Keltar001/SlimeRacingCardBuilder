@@ -189,6 +189,25 @@
           </div>
         </section>
 
+        <section class="panel-section print-export-panel">
+          <div class="section-heading">
+            <h2>Planche A4</h2>
+            <span id="a4PageCount" class="pill">0 page</span>
+          </div>
+          <label class="toggle-action print-option">
+            <input id="cropMarksToggle" type="checkbox" checked>
+            <span>Traits de coupe</span>
+          </label>
+          <label class="toggle-action print-option">
+            <input id="cardNamesToggle" type="checkbox">
+            <span>Inclure le nom des cartes</span>
+          </label>
+          <button type="button" id="exportA4Button" data-action="export-a4-pdf" disabled>
+            Exporter planche A4
+          </button>
+          <p class="print-help">Imprimer le PDF en taille reelle / 100%, sans ajustement automatique.</p>
+        </section>
+
         <section class="panel-section">
           <div class="section-heading">
             <h2>Galerie</h2>
@@ -213,6 +232,7 @@
       </aside>
     </main>
 
+    <script src="scripts/vendor/jspdf.umd.min.js"></script>
     <script src="scripts/layout-editor-utils.js"></script>
     <script src="card-builder.js"></script>
   </body>

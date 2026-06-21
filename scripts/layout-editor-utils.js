@@ -73,6 +73,52 @@
     return (!query || haystack.includes(query)) && (!filter || haystack.includes(filter));
   }
 
+  function buildA4SheetLayout(cardCount, options) {
+    const settings = options || {};
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const cardWidth = 63;
+    const cardHeight = 88;
+    const columns = 3;
+    const rows = 3;
+    const rowGap = settings.includeNames ? 4 : 0;
+    const cardsPerPage = columns * rows;
+    const marginX = (pageWidth - cardWidth * columns) / 2;
+    const marginY = (pageHeight - cardHeight * rows - rowGap * (rows - 1)) / 2;
+    const count = Math.max(0, Math.floor(Number(cardCount) || 0));
+    const positions = Array.from({ length: count }, (_, index) => {
+      const pageIndex = Math.floor(index / cardsPerPage);
+      const pageSlot = index % cardsPerPage;
+      const column = pageSlot % columns;
+      const row = Math.floor(pageSlot / columns);
+      return {
+        index,
+        pageIndex,
+        column,
+        row,
+        x: marginX + column * cardWidth,
+        y: marginY + row * (cardHeight + rowGap),
+        width: cardWidth,
+        height: cardHeight,
+      };
+    });
+
+    return {
+      pageWidth,
+      pageHeight,
+      cardWidth,
+      cardHeight,
+      columns,
+      rows,
+      rowGap,
+      cardsPerPage,
+      marginX,
+      marginY,
+      pageCount: count ? Math.ceil(count / cardsPerPage) : 0,
+      positions,
+    };
+  }
+
   function sanitizeNumber(value, fallback, min) {
     const parsed = Number(value);
     const next = Number.isFinite(parsed) ? parsed : fallback;
@@ -131,6 +177,7 @@
 
   return {
     assetMatchesSearch,
+    buildA4SheetLayout,
     buildCardSnapshot,
     buildTemplateTypesPayload,
     cloneTemplateTypes,

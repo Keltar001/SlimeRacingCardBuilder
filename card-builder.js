@@ -60,6 +60,8 @@
     assetSearch: "",
     assetQuickFilter: "",
     previewZoomMode: "fit",
+    a4CropMarks: true,
+    a4IncludeNames: false,
     layoutTemplateTypes: null,
   };
 
@@ -104,6 +106,10 @@
     elements.cardNameInput = document.getElementById("cardNameInput");
     elements.previewZoomSelect = document.getElementById("previewZoomSelect");
     elements.exportZipButton = document.getElementById("exportZipButton");
+    elements.exportA4Button = document.getElementById("exportA4Button");
+    elements.a4PageCount = document.getElementById("a4PageCount");
+    elements.cropMarksToggle = document.getElementById("cropMarksToggle");
+    elements.cardNamesToggle = document.getElementById("cardNamesToggle");
     elements.assetGallery = document.getElementById("assetGallery");
     elements.assetCount = document.getElementById("assetCount");
     elements.assetSearchInput = document.getElementById("assetSearchInput");
@@ -150,6 +156,8 @@
     elements.templateTypeSelect.addEventListener("change", handleTemplateTypeChange);
     elements.cardNameInput.addEventListener("input", handleCardNameInput);
     elements.previewZoomSelect.addEventListener("change", handlePreviewZoomChange);
+    elements.cropMarksToggle.addEventListener("change", handleA4OptionChange);
+    elements.cardNamesToggle.addEventListener("change", handleA4OptionChange);
     elements.assetSearchInput.addEventListener("input", handleAssetSearchInput);
     elements.savedCardSelect.addEventListener("change", handleSavedCardSelectChange);
     elements.layoutEditorToggle.addEventListener("change", handleLayoutEditorToggle);
@@ -304,6 +312,8 @@
         )
           ? parsed.previewZoomMode
           : "fit",
+        a4CropMarks: parsed.a4CropMarks !== false,
+        a4IncludeNames: Boolean(parsed.a4IncludeNames),
         layoutTemplateTypes: Array.isArray(parsed.layoutTemplateTypes)
           ? parsed.layoutTemplateTypes
           : null,
@@ -336,6 +346,8 @@
           assetSearch: state.assetSearch,
           assetQuickFilter: state.assetQuickFilter,
           previewZoomMode: state.previewZoomMode,
+          a4CropMarks: state.a4CropMarks,
+          a4IncludeNames: state.a4IncludeNames,
           layoutTemplateTypes: state.layoutTemplateTypes,
         }),
       );
@@ -353,6 +365,7 @@
     renderSlotDetails();
     renderLayoutEditor();
     renderSavedCards();
+    renderPrintExport();
     renderAssetGallery();
     renderButtons();
     renderStatus();
@@ -571,6 +584,15 @@
     elements.savedCardSelect.value = state.activeSavedCardId || state.savedCards[0].id;
   }
 
+  function renderPrintExport() {
+    const layout = layoutUtils.buildA4SheetLayout(state.savedCards.length, {
+      includeNames: state.a4IncludeNames,
+    });
+    elements.a4PageCount.textContent = `${layout.pageCount} page${layout.pageCount > 1 ? "s" : ""}`;
+    elements.cropMarksToggle.checked = state.a4CropMarks;
+    elements.cardNamesToggle.checked = state.a4IncludeNames;
+  }
+
   function renderAssetGallery() {
     const type = getCurrentTemplateType();
     const slot = getSelectedSlot();
@@ -636,6 +658,11 @@
     const selectedSavedCard = getSelectedSavedCard();
     elements.exportButton.disabled = Boolean(loadError) || !hasTemplate;
     elements.exportZipButton.disabled = Boolean(loadError) || !state.savedCards.length;
+    elements.exportA4Button.disabled =
+      Boolean(loadError) ||
+      !state.savedCards.length ||
+      !window.jspdf ||
+      typeof window.jspdf.jsPDF !== "function";
     elements.removeSlotButton.disabled = !selectedSlot || state.layoutEditorMode;
     elements.loadCardButton.disabled = !selectedSavedCard;
     elements.duplicateCardButton.disabled = !selectedSavedCard && !getCurrentTemplateType();
@@ -762,6 +789,13 @@
     render();
   }
 
+  function handleA4OptionChange() {
+    state.a4CropMarks = elements.cropMarksToggle.checked;
+    state.a4IncludeNames = elements.cardNamesToggle.checked;
+    saveState();
+    renderPrintExport();
+  }
+
   function handleAssetSearchInput(event) {
     state.assetSearch = event.target.value;
     saveState();
@@ -817,6 +851,8 @@
       elements.cardJsonImport.click();
     } else if (action === "export-saved-zip") {
       exportSavedCardsZip();
+    } else if (action === "export-a4-pdf") {
+      exportA4Pdf();
     } else if (action === "set-asset-filter") {
       state.assetQuickFilter = actionTarget.dataset.filter || "";
       saveState();
@@ -1394,6 +1430,123 @@
       render();
       requestCanvasDraw();
     }
+  }
+
+  async function exportA4Pdf() {
+    if (!state.savedCards.length) {
+      setStatus("Aucune carte sauvegardee a exporter.", "warning");
+      renderStatus();
+      return;
+    }
+    if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") {
+      setStatus("Export PDF indisponible : jsPDF n'est pas charge.", "error");
+      renderStatus();
+      return;
+    }
+
+    const previousState = JSON.parse(JSON.stringify(state));
+    const layout = layoutUtils.buildA4SheetLayout(state.savedCards.length, {
+      includeNames: state.a4IncludeNames,
+    });
+    const pdf = new window.jspdf.jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: false,
+    });
+    let renderedCount = 0;
+    let currentPage = 0;
+
+    try {
+      for (const position of layout.positions) {
+        if (position.pageIndex !== currentPage) {
+          pdf.addPage("a4", "portrait");
+          currentPage = position.pageIndex;
+        }
+
+        const card = state.savedCards[position.index];
+        applyCardSnapshot(card, { save: false, render: false });
+        const drawn = await drawCanvas();
+        if (!drawn) {
+          continue;
+        }
+
+        const imageData = elements.cardCanvas.toDataURL("image/jpeg", 0.95);
+        pdf.addImage(
+          imageData,
+          "JPEG",
+          position.x,
+          position.y,
+          position.width,
+          position.height,
+          undefined,
+          "FAST",
+        );
+        if (previousState.a4IncludeNames && card.name) {
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(7);
+          pdf.setTextColor(30, 30, 30);
+          pdf.text(card.name, position.x + position.width / 2, position.y + 90.6, {
+            align: "center",
+            maxWidth: position.width - 2,
+          });
+        }
+        renderedCount += 1;
+      }
+
+      if (!renderedCount) {
+        throw new Error("No card rendered");
+      }
+
+      if (previousState.a4CropMarks) {
+        drawA4CropMarks(pdf, layout);
+      }
+
+      const date = new Date().toISOString().slice(0, 10);
+      pdf.save(`planche-a4-cartes-${date}.pdf`);
+      setStatus(
+        `${renderedCount} carte(s) exportee(s) sur ${layout.pageCount} page(s) A4.`,
+        "success",
+      );
+    } catch (error) {
+      setStatus("Export planche A4 impossible.", "error");
+    } finally {
+      state = previousState;
+      saveState();
+      render();
+      requestCanvasDraw();
+    }
+  }
+
+  function drawA4CropMarks(pdf, layout) {
+    pdf.setDrawColor(70, 70, 70);
+    pdf.setLineWidth(0.1);
+    for (let pageIndex = 0; pageIndex < layout.pageCount; pageIndex += 1) {
+      const pagePositions = layout.positions.filter(
+        (position) => position.pageIndex === pageIndex,
+      );
+      const verticalCuts = uniqueNumbers(
+        pagePositions.flatMap((position) => [position.x, position.x + position.width]),
+      );
+      const horizontalCuts = uniqueNumbers(
+        pagePositions.flatMap((position) => [position.y, position.y + position.height]),
+      );
+      pdf.setPage(pageIndex + 1);
+      verticalCuts.forEach((x) => {
+        pdf.line(x, 2, x, 7);
+        pdf.line(x, layout.pageHeight - 7, x, layout.pageHeight - 2);
+      });
+      horizontalCuts.forEach((y) => {
+        pdf.line(2, y, 7, y);
+        pdf.line(layout.pageWidth - 7, y, layout.pageWidth - 2, y);
+      });
+    }
+  }
+
+  function uniqueNumbers(values) {
+    return [...new Set(values.map((value) => Number(value.toFixed(3))))].sort(
+      (left, right) => left - right,
+    );
   }
 
   async function copyCurrentTypeJson() {
