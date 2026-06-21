@@ -3,6 +3,7 @@ const test = require("node:test");
 
 const {
   assetMatchesSearch,
+  buildA4SheetLayout,
   buildCardSnapshot,
   buildTemplateTypesPayload,
   cloneTemplateTypes,
@@ -126,4 +127,61 @@ test("assetMatchesSearch filters by text, category, terrain, and level", () => {
   assert.equal(assetMatchesSearch(asset, "", "slime", "eau"), true);
   assert.equal(assetMatchesSearch(asset, "", "slime", "lvl2"), true);
   assert.equal(assetMatchesSearch(asset, "", "slime", "desert"), false);
+});
+
+test("buildA4SheetLayout uses exact A4 and trading card dimensions", () => {
+  const layout = buildA4SheetLayout(1);
+
+  assert.equal(layout.pageWidth, 210);
+  assert.equal(layout.pageHeight, 297);
+  assert.equal(layout.cardWidth, 63);
+  assert.equal(layout.cardHeight, 88);
+  assert.equal(layout.pageCount, 1);
+  assert.deepEqual(layout.positions[0], {
+    index: 0,
+    pageIndex: 0,
+    column: 0,
+    row: 0,
+    x: 10.5,
+    y: 16.5,
+    width: 63,
+    height: 88,
+  });
+});
+
+test("buildA4SheetLayout places nine cards on one page", () => {
+  const layout = buildA4SheetLayout(9);
+
+  assert.equal(layout.pageCount, 1);
+  assert.equal(layout.positions.length, 9);
+  assert.deepEqual(layout.positions[8], {
+    index: 8,
+    pageIndex: 0,
+    column: 2,
+    row: 2,
+    x: 136.5,
+    y: 192.5,
+    width: 63,
+    height: 88,
+  });
+});
+
+test("buildA4SheetLayout starts a second page for the tenth card", () => {
+  const layout = buildA4SheetLayout(10);
+
+  assert.equal(layout.pageCount, 2);
+  assert.equal(layout.positions[9].pageIndex, 1);
+  assert.equal(layout.positions[9].x, 10.5);
+  assert.equal(layout.positions[9].y, 16.5);
+});
+
+test("buildA4SheetLayout reserves caption space without resizing cards", () => {
+  const layout = buildA4SheetLayout(9, { includeNames: true });
+
+  assert.equal(layout.cardWidth, 63);
+  assert.equal(layout.cardHeight, 88);
+  assert.equal(layout.marginY, 12.5);
+  assert.equal(layout.rowGap, 4);
+  assert.equal(layout.positions[3].y, 104.5);
+  assert.equal(layout.positions[6].y, 196.5);
 });
